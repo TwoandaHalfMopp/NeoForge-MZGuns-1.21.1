@@ -42,11 +42,11 @@ displayName="${mod_name}" #mandatory
 #credits="" #optional
 
 # The authors of the mod, displayed in the mod UI (optional)
-#authors=""
+authors="Moppzarella"
 
 # The description text for the mod (multi line!) (#mandatory)
 description='''
-Example mod description.
+Gun Mod where I get to be picky about implementation.
 '''
 
 # The [[mixins]] block allows you to declare your mixin config to FML so that it gets loaded.
