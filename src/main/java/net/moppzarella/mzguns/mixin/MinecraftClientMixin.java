@@ -23,7 +23,6 @@ public abstract class MinecraftClientMixin {
     @Shadow @Nullable public LocalPlayer player;
     @Shadow @Nullable public abstract ClientPacketListener getConnection();
 
-    //@Inject(method = "startAttack", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;getItemInHand(Lnet/minecraft/world/InteractionHand;)Lnet/minecraft/world/item/ItemStack;", shift = At.Shift.AFTER), cancellable = true)
     @Inject(method = "startAttack", at = @At(value = "HEAD"), cancellable = true)
     private void startPrimaryFire(CallbackInfoReturnable<Boolean> cir) {
         assert player != null;
