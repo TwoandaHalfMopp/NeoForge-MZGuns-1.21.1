@@ -50,7 +50,8 @@ public class HitscanPelletEntity extends Projectile {
         ItemStack itemStack = pPlayer.getMainHandItem();
         if (!pLevel.isClientSide) {
             HitResult hitResult = LaserPointerHitHelper.getInstance().getHitResult(this);
-            //MZGuns.LOGGER.info(hitResult.toString());
+            MZGuns.LOGGER.info("\nPLAYER ROTATION: {},{}\nPELLET ROT: {}, {}",pPlayer.getXRot(), pPlayer.getYRot(), this.getXRot(), this.getYRot());
+
 
             //pLevel.addParticle(ParticleTypes.ELECTRIC_SPARK,this.getX(),this.getY(),this.getZ(),0,0,0);
             if (hitResult.getType() == HitResult.Type.BLOCK) {
@@ -60,10 +61,10 @@ public class HitscanPelletEntity extends Projectile {
                 EntityHitResult entityHitResult = (EntityHitResult) hitResult;
 
                 Entity target = entityHitResult.getEntity();
-                //MZGuns.LOGGER.info(target.toString());
+                MZGuns.LOGGER.info(target.toString());
 
                 target.hurt(ModDamageTypes.causeBulletDamage(pLevel.registryAccess(),target,this),8.0F * calculateDamageFalloff(distanceTo(target)));
-                MZGuns.LOGGER.info("{} Blocks: {}x Damage",this.distanceTo(target),String.valueOf(calculateDamageFalloff(distanceTo(target))));
+                //MZGuns.LOGGER.info("{} Blocks: {}x Damage",this.distanceTo(target),String.valueOf(calculateDamageFalloff(distanceTo(target))));
             }
 
             if (pLevel instanceof ServerLevel) {
@@ -74,7 +75,7 @@ public class HitscanPelletEntity extends Projectile {
                 for(double i = 0; i < LaserPointerHitHelper.getInstance().getLaserDistance();i += particleInterval) {
                     //MZGuns.LOGGER.info("Particle {}: {}, {}, {}",i,this.getX() + (lookDir.x * i),this.getY() + (lookDir.y + i),this.getZ() + (lookDir.z + i));
                     ((ServerLevel) pLevel).sendParticles(
-                            new DustParticleOptions(new Vector3f(1,1,1), 1F),
+                            new DustParticleOptions(new Vector3f(1,1,1), 0.25F),
                             this.getX() + (lookDir.x * i),
                             this.getY() + (lookDir.y * i),
                             this.getZ() + (lookDir.z * i),

@@ -3,6 +3,7 @@ package net.moppzarella.mzguns;
 import net.minecraft.resources.ResourceLocation;
 import net.moppzarella.mzguns.entity.ModEntities;
 import net.moppzarella.mzguns.item.ModItems;
+import net.moppzarella.mzguns.util.ModDamageTypes;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;

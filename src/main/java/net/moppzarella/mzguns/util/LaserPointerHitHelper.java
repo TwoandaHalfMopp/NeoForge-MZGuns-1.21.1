@@ -31,7 +31,7 @@ public class LaserPointerHitHelper {
 
     public void calcHitResult(HitscanPelletEntity pellet, float partialTick) {
         HitResult hitResult = pellet.pick(LASER_RANGE, partialTick, false);
-        Vec3 traceBegin = pellet.getEyePosition(partialTick);
+        Vec3 traceBegin = pellet.getPosition(partialTick);
         double distance = hitResult.getLocation().distanceTo(traceBegin);
         Vec3 scaledViewVec = pellet.getViewVector(partialTick).scale(LASER_RANGE);
         Vec3 traceEnd = traceBegin.add(scaledViewVec);
