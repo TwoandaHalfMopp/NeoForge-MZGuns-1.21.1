@@ -1,5 +1,7 @@
 package net.moppzarella.mzguns;
 
+import net.minecraft.resources.ResourceLocation;
+import net.moppzarella.mzguns.entity.ModEntities;
 import net.moppzarella.mzguns.item.ModItems;
 import org.slf4j.Logger;
 
@@ -38,6 +40,7 @@ public class MZGuns {
         //modEventBus.addListener(ModPayloads.register(PrimaryFirePayload));
 
         ModItems.register(modEventBus);
+        ModEntities.register(modEventBus);
 
         // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);
@@ -57,6 +60,10 @@ public class MZGuns {
     // Add the example block item to the building blocks tab
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
 
+    }
+
+    public static ResourceLocation makeResLoc(String path) {
+        return ResourceLocation.fromNamespaceAndPath(MODID, path);
     }
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call
