@@ -24,6 +24,7 @@ import org.joml.Vector3f;
 
 public class HitscanPelletEntity extends Projectile {
     private float baseDamage = 8.0F;
+    private final float particleRenderDistanceThreshold = 1.5F;
 
     public HitscanPelletEntity(EntityType<? extends Projectile> entityType, Level level) {
         super(entityType, level);
@@ -77,12 +78,14 @@ public class HitscanPelletEntity extends Projectile {
                 //MZGuns.LOGGER.info("lookDir: {}, {}, {}", lookDir.x, lookDir.y, lookDir.z);
                 for(double i = 0; i < LaserPointerHitHelper.getInstance().getLaserDistance();i += particleInterval) {
                     //MZGuns.LOGGER.info("Particle {}: {}, {}, {}",i,this.getX() + (lookDir.x * i),this.getY() + (lookDir.y + i),this.getZ() + (lookDir.z + i));
-                    ((ServerLevel) pLevel).sendParticles(
-                            new DustParticleOptions(new Vector3f(1,1,1), 0.1F),
-                            this.getX() + (lookDir.x * i),
-                            this.getY() + (lookDir.y * i),
-                            this.getZ() + (lookDir.z * i),
-                            1,0,0,0,0);
+                    if (i >= particleRenderDistanceThreshold) {
+                        ((ServerLevel) pLevel).sendParticles(
+                                new DustParticleOptions(new Vector3f(1,1,1), 0.5F),
+                                this.getX() + (lookDir.x * i),
+                                this.getY() + (lookDir.y * i),
+                                this.getZ() + (lookDir.z * i),
+                                1,0,0,0,0);
+                    }
                 }
             }
 

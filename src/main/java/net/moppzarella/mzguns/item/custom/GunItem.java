@@ -47,7 +47,7 @@ public class GunItem extends Item {
             float randPitch = (float) ((Math.random() - 0.5) * 2 * current_bloom);
             float randYaw = (float) ((Math.random() - 0.5) * 2 * current_bloom);
 
-            MZGuns.LOGGER.info(String.valueOf(current_bloom));
+            //MZGuns.LOGGER.info(String.valueOf(current_bloom));
 
             spawnPellet(level, player, usedHand, randYaw, randPitch);
 
