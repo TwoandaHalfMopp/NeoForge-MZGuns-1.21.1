@@ -17,18 +17,21 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.moppzarella.mzguns.MZGuns;
 import net.moppzarella.mzguns.entity.ModEntities;
+import net.moppzarella.mzguns.item.custom.GunItem;
 import net.moppzarella.mzguns.util.LaserPointerHitHelper;
 import net.moppzarella.mzguns.util.ModDamageTypes;
 import org.joml.Vector3f;
 
 public class HitscanPelletEntity extends Projectile {
+    private float baseDamage = 8.0F;
 
     public HitscanPelletEntity(EntityType<? extends Projectile> entityType, Level level) {
         super(entityType, level);
     }
 
-    public HitscanPelletEntity(Level level, LivingEntity shooter) {
+    public HitscanPelletEntity(Level level, LivingEntity shooter, float baseDamage) {
         super(ModEntities.HITSCAN_PELLET.get(), level);
+        this.baseDamage = baseDamage;
         this.setOwner(shooter);
     }
 
@@ -50,7 +53,7 @@ public class HitscanPelletEntity extends Projectile {
         ItemStack itemStack = pPlayer.getMainHandItem();
         if (!pLevel.isClientSide) {
             HitResult hitResult = LaserPointerHitHelper.getInstance().getHitResult(this);
-            MZGuns.LOGGER.info("\nPLAYER ROTATION: {},{}\nPELLET ROT: {}, {}",pPlayer.getXRot(), pPlayer.getYRot(), this.getXRot(), this.getYRot());
+            //MZGuns.LOGGER.info("\nPLAYER ROTATION: {},{}\nPELLET ROT: {}, {}",pPlayer.getXRot(), pPlayer.getYRot(), this.getXRot(), this.getYRot());
 
 
             //pLevel.addParticle(ParticleTypes.ELECTRIC_SPARK,this.getX(),this.getY(),this.getZ(),0,0,0);
@@ -63,7 +66,7 @@ public class HitscanPelletEntity extends Projectile {
                 Entity target = entityHitResult.getEntity();
                 MZGuns.LOGGER.info(target.toString());
 
-                target.hurt(ModDamageTypes.causeBulletDamage(pLevel.registryAccess(),target,this),8.0F * calculateDamageFalloff(distanceTo(target)));
+                target.hurt(ModDamageTypes.causeBulletDamage(pLevel.registryAccess(),target,this), this.baseDamage * calculateDamageFalloff(distanceTo(target)));
                 //MZGuns.LOGGER.info("{} Blocks: {}x Damage",this.distanceTo(target),String.valueOf(calculateDamageFalloff(distanceTo(target))));
             }
 
@@ -75,7 +78,7 @@ public class HitscanPelletEntity extends Projectile {
                 for(double i = 0; i < LaserPointerHitHelper.getInstance().getLaserDistance();i += particleInterval) {
                     //MZGuns.LOGGER.info("Particle {}: {}, {}, {}",i,this.getX() + (lookDir.x * i),this.getY() + (lookDir.y + i),this.getZ() + (lookDir.z + i));
                     ((ServerLevel) pLevel).sendParticles(
-                            new DustParticleOptions(new Vector3f(1,1,1), 0.25F),
+                            new DustParticleOptions(new Vector3f(1,1,1), 0.1F),
                             this.getX() + (lookDir.x * i),
                             this.getY() + (lookDir.y * i),
                             this.getZ() + (lookDir.z * i),
