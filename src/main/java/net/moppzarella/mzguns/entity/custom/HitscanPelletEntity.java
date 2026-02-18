@@ -1,8 +1,12 @@
 package net.moppzarella.mzguns.entity.custom;
 
+import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -20,6 +24,7 @@ import net.moppzarella.mzguns.entity.ModEntities;
 import net.moppzarella.mzguns.item.custom.GunItem;
 import net.moppzarella.mzguns.util.LaserPointerHitHelper;
 import net.moppzarella.mzguns.util.ModDamageTypes;
+import org.joml.Vector3d;
 import org.joml.Vector3f;
 
 public class HitscanPelletEntity extends Projectile {
@@ -54,10 +59,7 @@ public class HitscanPelletEntity extends Projectile {
         ItemStack itemStack = pPlayer.getMainHandItem();
         if (!pLevel.isClientSide) {
             HitResult hitResult = LaserPointerHitHelper.getInstance().getHitResult(this);
-            //MZGuns.LOGGER.info("\nPLAYER ROTATION: {},{}\nPELLET ROT: {}, {}",pPlayer.getXRot(), pPlayer.getYRot(), this.getXRot(), this.getYRot());
 
-
-            //pLevel.addParticle(ParticleTypes.ELECTRIC_SPARK,this.getX(),this.getY(),this.getZ(),0,0,0);
             if (hitResult.getType() == HitResult.Type.BLOCK) {
                 BlockHitResult blockHitResult = (BlockHitResult) hitResult;
                 //MZGuns.LOGGER.info(blockHitResult.getBlockPos().toString());
@@ -65,7 +67,7 @@ public class HitscanPelletEntity extends Projectile {
                 EntityHitResult entityHitResult = (EntityHitResult) hitResult;
 
                 Entity target = entityHitResult.getEntity();
-                MZGuns.LOGGER.info(target.toString());
+                //MZGuns.LOGGER.info(target.toString());
 
                 target.hurt(ModDamageTypes.causeBulletDamage(pLevel.registryAccess(),target,this), this.baseDamage * calculateDamageFalloff(distanceTo(target)));
                 //MZGuns.LOGGER.info("{} Blocks: {}x Damage",this.distanceTo(target),String.valueOf(calculateDamageFalloff(distanceTo(target))));
@@ -73,7 +75,8 @@ public class HitscanPelletEntity extends Projectile {
 
             if (pLevel instanceof ServerLevel) {
 
-                Vec3 lookDir = new Vec3(this.calculateViewVector(this.getXRot(),this.getYRot()).toVector3f());
+                Vec3 lookDir = new Vec3(this.getViewVector(1f).toVector3f());
+                //lookDir = lookDir.add(0, 0.25, 0);
                 double particleInterval = 0.25;
                 //MZGuns.LOGGER.info("lookDir: {}, {}, {}", lookDir.x, lookDir.y, lookDir.z);
                 for(double i = 0; i < LaserPointerHitHelper.getInstance().getLaserDistance();i += particleInterval) {
@@ -82,11 +85,23 @@ public class HitscanPelletEntity extends Projectile {
                         ((ServerLevel) pLevel).sendParticles(
                                 new DustParticleOptions(new Vector3f(1,1,1), 0.5F),
                                 this.getX() + (lookDir.x * i),
-                                this.getY() + (lookDir.y * i),
+                                this.getEyeY() + (lookDir.y * i),
                                 this.getZ() + (lookDir.z * i),
                                 1,0,0,0,0);
                     }
                 }
+                Vec3 hitPos = hitResult.getLocation();
+                ((ServerLevel) pLevel).sendParticles(ParticleTypes.SMALL_GUST, hitPos.x,hitPos.y,hitPos.z,1,0,0,0,0);
+
+                pLevel.playSound(
+                        null,
+                        hitPos.x,
+                        hitPos.y,
+                        hitPos.z,
+                        SoundEvents.ANCIENT_DEBRIS_BREAK,
+                        SoundSource.NEUTRAL,
+                        0.25F,
+                        0.4F / (pLevel.getRandom().nextFloat() * 0.4F + 0.8F));
             }
 
         }

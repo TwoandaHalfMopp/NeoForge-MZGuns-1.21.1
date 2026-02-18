@@ -17,7 +17,9 @@ public class ModEntities {
 
     public static final Supplier<EntityType<HitscanPelletEntity>> HITSCAN_PELLET =
             ENTITY_TYPES.register("hitscan_pellet", () -> EntityType.Builder.<HitscanPelletEntity>of(HitscanPelletEntity::new, MobCategory.MISC)
-                    .sized(0.5f,0.5f).build("hitscan_pellet")
+                    .sized(0.5f,0.5f)
+                    .eyeHeight(0.25f)
+                    .build("hitscan_pellet")
             );
 
     public static void register(IEventBus eventBus) {

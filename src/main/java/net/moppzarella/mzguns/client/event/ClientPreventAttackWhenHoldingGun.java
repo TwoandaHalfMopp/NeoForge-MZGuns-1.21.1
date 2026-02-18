@@ -23,7 +23,7 @@ public class ClientPreventAttackWhenHoldingGun {
         if(player == null) return;
 
         ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
-        if(itemInHand.getItem() instanceof GunItem) {
+        if(itemInHand.getItem() instanceof GunItem && event.isAttack()) {
             HitResult hitResult = Minecraft.getInstance().hitResult;
             if (hitResult instanceof EntityHitResult entityHitResult && entityHitResult.getEntity() instanceof ItemFrame) {
                 return;
