@@ -60,11 +60,13 @@ public class GunItem extends Item {
 
 
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
-        if (this.current_bloom > 0F && this.firing_cooldown <= 0) {
-            this.current_bloom = Math.clamp(this.current_bloom - bloomDecayRate, 0F, 1F);
-        }
-        if (this.firing_cooldown > 0) {
-            this.firing_cooldown -= 1;
+        if (!level.isClientSide) {
+            if (this.current_bloom > 0F && this.firing_cooldown <= 0) {
+                this.current_bloom = Math.clamp(this.current_bloom - bloomDecayRate, 0F, 1F);
+            }
+            if (this.firing_cooldown > 0) {
+                this.firing_cooldown -= 1;
+            }
         }
     }
 
