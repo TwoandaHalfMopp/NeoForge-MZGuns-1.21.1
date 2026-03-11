@@ -1,6 +1,7 @@
 package net.moppzarella.mzguns;
 
 import net.minecraft.resources.ResourceLocation;
+import net.moppzarella.mzguns.component.ModDataComponents;
 import net.moppzarella.mzguns.entity.ModEntities;
 import net.moppzarella.mzguns.item.ModItems;
 import net.moppzarella.mzguns.util.ModDamageTypes;
@@ -42,6 +43,8 @@ public class MZGuns {
 
         ModItems.register(modEventBus);
         ModEntities.register(modEventBus);
+
+        ModDataComponents.register(modEventBus);
 
         // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);

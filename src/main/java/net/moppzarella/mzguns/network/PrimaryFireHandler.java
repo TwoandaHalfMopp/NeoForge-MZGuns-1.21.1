@@ -46,7 +46,7 @@ public class PrimaryFireHandler {
         );
     }
 
-    public record IsPrimaryFireKeyPressed(boolean primaryfirekeydown) implements CustomPacketPayload {
+    public record IsPrimaryFireKeyPressed(boolean primaryfirekeydown, Long timestamp) implements CustomPacketPayload {
 
         public static final CustomPacketPayload.Type<IsPrimaryFireKeyPressed> IS_PRIMARY_FIRE_KEY_PRESSED_TYPE =
                 new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(MZGuns.MODID, "isprimaryfirekeypressed"));
@@ -54,6 +54,8 @@ public class PrimaryFireHandler {
         public static final StreamCodec<ByteBuf, IsPrimaryFireKeyPressed> IS_PRIMARY_FIRE_KEY_PRESSED_STREAM_CODEC = StreamCodec.composite(
                 ByteBufCodecs.BOOL,
                 IsPrimaryFireKeyPressed::primaryfirekeydown,
+                ByteBufCodecs.VAR_LONG,
+                IsPrimaryFireKeyPressed::timestamp,
                 IsPrimaryFireKeyPressed::new
         );
 
