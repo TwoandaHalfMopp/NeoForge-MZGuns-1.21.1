@@ -1,12 +1,10 @@
 package net.moppzarella.mzguns.network;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -15,7 +13,6 @@ import net.moppzarella.mzguns.MZGuns;
 import net.moppzarella.mzguns.item.custom.GunItem;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.handling.IPayloadHandler;
@@ -30,18 +27,13 @@ public class PrimaryFireHandler {
         registrar.playToServer(
                 IsPrimaryFireKeyPressed.IS_PRIMARY_FIRE_KEY_PRESSED_TYPE,
                 IsPrimaryFireKeyPressed.IS_PRIMARY_FIRE_KEY_PRESSED_STREAM_CODEC,
-                new IPayloadHandler<IsPrimaryFireKeyPressed>() {
+                (payload, context) -> {
 
-                    @Override
-                    public void handle(IsPrimaryFireKeyPressed payload, IPayloadContext context) {
-
-                        Player player = context.player();
-                        Level level = context.player().level();
-                        Item gun_that_the_player_is_using = player.getItemInHand(InteractionHand.MAIN_HAND).getItem();
-                        if(payload.primaryfirekeydown && gun_that_the_player_is_using instanceof GunItem) {
-                            ((GunItem) gun_that_the_player_is_using).primaryFire(level, player, InteractionHand.MAIN_HAND);
-
-                        }
+                    Player player = context.player();
+                    Level level = context.player().level();
+                    Item gun_that_the_player_is_using = player.getItemInHand(InteractionHand.MAIN_HAND).getItem();
+                    if(payload.primaryfirekeydown && gun_that_the_player_is_using instanceof GunItem) {
+                        ((GunItem) gun_that_the_player_is_using).primaryFire(level, player, InteractionHand.MAIN_HAND);
 
                     }
 

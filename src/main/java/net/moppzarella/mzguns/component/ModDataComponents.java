@@ -3,8 +3,6 @@ package net.moppzarella.mzguns.component;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.VarLong;
-import net.minecraft.resources.ResourceLocation;
 import net.moppzarella.mzguns.MZGuns;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;

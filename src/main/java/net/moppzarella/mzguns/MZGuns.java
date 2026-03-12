@@ -5,7 +5,6 @@ import net.moppzarella.mzguns.component.ModDataComponents;
 import net.moppzarella.mzguns.entity.ModEntities;
 import net.moppzarella.mzguns.item.ModCreativeModeTabs;
 import net.moppzarella.mzguns.item.ModItems;
-import net.moppzarella.mzguns.util.ModDamageTypes;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -49,7 +48,7 @@ public class MZGuns {
         ModDataComponents.register(modEventBus);
 
         // Register the item to a creative tab
-        modEventBus.addListener(this::addCreative);
+        //modEventBus.addListener(this::addCreative);
 
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
@@ -63,10 +62,10 @@ public class MZGuns {
 
     }
 
-    // Add the example block item to the building blocks tab
-    private void addCreative(BuildCreativeModeTabContentsEvent event) {
-
-    }
+//    // Add the example block item to the building blocks tab
+//    private void addCreative(BuildCreativeModeTabContentsEvent event) {
+//
+//    }
 
     public static ResourceLocation makeResLoc(String path) {
         return ResourceLocation.fromNamespaceAndPath(MODID, path);

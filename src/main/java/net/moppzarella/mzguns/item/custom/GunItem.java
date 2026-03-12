@@ -5,7 +5,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -16,11 +15,11 @@ import net.moppzarella.mzguns.component.ModDataComponents;
 import net.moppzarella.mzguns.entity.custom.HitscanPelletEntity;
 
 public class GunItem extends Item {
-    public float baseDamage = 8F;
+    public final float baseDamage = 8F;
 
-    public float bloomRadius = 0.7F; //I don't know if this is measured in degrees or radians
-    public double bloomDecayRate = 0.04D; //The amount to subtract from current_bloom (if it's above 0) each tick
-    public int firingRate = 10; //The amount of ticks between shots
+    public final float bloomRadius = 0.7F; //I don't know if this is measured in degrees or radians
+    public final double bloomDecayRate = 0.04D; //The amount to subtract from current_bloom (if it's above 0) each tick
+    public final int firingRate = 10; //The amount of ticks between shots
 
     public GunItem(Properties properties) {
         super(properties);
@@ -81,8 +80,8 @@ public class GunItem extends Item {
         HitscanPelletEntity temp_bullet = new HitscanPelletEntity(level, player, this.baseDamage);
         temp_bullet.setPos(player.getX(), player.getEyeY() - 0.25, player.getZ());
 
-        temp_bullet.setYRot(player.getYRot());
-        temp_bullet.setXRot(player.getXRot());
+        temp_bullet.setYRot(player.getYRot() + yawOffset);
+        temp_bullet.setXRot(player.getXRot() + pitchOffset);
 
         level.addFreshEntity(temp_bullet);
     }
@@ -106,16 +105,6 @@ public class GunItem extends Item {
 
     public boolean isOnFiringCooldown(ItemStack stack) {
         return getFiringCooldown(stack) > 0;
-    }
-
-    public final Vec3 calculateViewVector(float xRot, float yRot) {
-        float f = xRot * (float) (Math.PI / 180.0);
-        float f1 = -yRot * (float) (Math.PI / 180.0);
-        float f2 = Mth.cos(f1);
-        float f3 = Mth.sin(f1);
-        float f4 = Mth.cos(f);
-        float f5 = Mth.sin(f);
-        return new Vec3((double)(f3 * f4), (double)(-f5), (double)(f2 * f4));
     }
 
 }

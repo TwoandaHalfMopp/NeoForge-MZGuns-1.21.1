@@ -1,7 +1,5 @@
 package net.moppzarella.mzguns;
 
-import com.mojang.authlib.minecraft.client.MinecraftClient;
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.entity.EntityRenderers;

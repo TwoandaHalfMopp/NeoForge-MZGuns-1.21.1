@@ -1,6 +1,5 @@
 package net.moppzarella.mzguns.entity.custom;
 
-import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -19,12 +18,9 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.moppzarella.mzguns.MZGuns;
 import net.moppzarella.mzguns.entity.ModEntities;
-import net.moppzarella.mzguns.item.custom.GunItem;
 import net.moppzarella.mzguns.util.LaserPointerHitHelper;
 import net.moppzarella.mzguns.util.ModDamageTypes;
-import org.joml.Vector3d;
 import org.joml.Vector3f;
 
 public class HitscanPelletEntity extends Projectile {
@@ -55,8 +51,6 @@ public class HitscanPelletEntity extends Projectile {
 
         if (pPlayer == null) return;
         Level pLevel = this.level();
-        InteractionHand pUsedHand = InteractionHand.MAIN_HAND;
-        ItemStack itemStack = pPlayer.getMainHandItem();
         if (!pLevel.isClientSide) {
             HitResult hitResult = LaserPointerHitHelper.getInstance().getHitResult(this);
 

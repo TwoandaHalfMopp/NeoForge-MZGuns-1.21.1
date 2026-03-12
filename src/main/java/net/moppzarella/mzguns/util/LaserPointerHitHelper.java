@@ -5,7 +5,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.*;
-import net.moppzarella.mzguns.MZGuns;
 import net.moppzarella.mzguns.entity.custom.HitscanPelletEntity;
 
 //THIS WAS STOLEN FROM DRG LASER POINTER BY linngdu664
