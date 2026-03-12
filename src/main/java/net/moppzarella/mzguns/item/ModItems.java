@@ -11,7 +11,7 @@ public class ModItems {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MZGuns.MODID);
 
     public static final DeferredItem<Item> BETA_GUN = ITEMS.register("beta_gun",
-            () -> new GunItem(new Item.Properties()));
+            () -> new GunItem(new Item.Properties().stacksTo(1)));
 
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);

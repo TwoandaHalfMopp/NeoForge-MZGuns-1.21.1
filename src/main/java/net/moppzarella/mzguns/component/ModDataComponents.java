@@ -19,8 +19,8 @@ public class ModDataComponents {
 
    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> CURRENT_FIRING_COOLDOWN = register("current_firing_cooldown",
             builder -> builder.persistent(Codec.INT));
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Float>> CURRENT_BLOOM = register("current_bloom",
-            builder -> builder.persistent(Codec.FLOAT ));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Double>> CURRENT_BLOOM = register("current_bloom",
+            builder -> builder.persistent(Codec.DOUBLE ));
 
     private static <T>DeferredHolder<DataComponentType<?>, DataComponentType<T>> register(String name,
                                                                                           UnaryOperator<DataComponentType.Builder<T>> builderOperator) {

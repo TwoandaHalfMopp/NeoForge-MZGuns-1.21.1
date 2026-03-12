@@ -1,10 +1,12 @@
 package net.moppzarella.mzguns.network;
 
 import io.netty.buffer.ByteBuf;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -13,6 +15,7 @@ import net.moppzarella.mzguns.MZGuns;
 import net.moppzarella.mzguns.item.custom.GunItem;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.handling.IPayloadHandler;
@@ -46,7 +49,7 @@ public class PrimaryFireHandler {
         );
     }
 
-    public record IsPrimaryFireKeyPressed(boolean primaryfirekeydown, Long timestamp) implements CustomPacketPayload {
+    public record IsPrimaryFireKeyPressed(boolean primaryfirekeydown) implements CustomPacketPayload {
 
         public static final CustomPacketPayload.Type<IsPrimaryFireKeyPressed> IS_PRIMARY_FIRE_KEY_PRESSED_TYPE =
                 new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(MZGuns.MODID, "isprimaryfirekeypressed"));
@@ -54,8 +57,6 @@ public class PrimaryFireHandler {
         public static final StreamCodec<ByteBuf, IsPrimaryFireKeyPressed> IS_PRIMARY_FIRE_KEY_PRESSED_STREAM_CODEC = StreamCodec.composite(
                 ByteBufCodecs.BOOL,
                 IsPrimaryFireKeyPressed::primaryfirekeydown,
-                ByteBufCodecs.VAR_LONG,
-                IsPrimaryFireKeyPressed::timestamp,
                 IsPrimaryFireKeyPressed::new
         );
 
