@@ -20,6 +20,10 @@ public class GunItem extends Item {
     public final float bloomRadius = 0.7F; //I don't know if this is measured in degrees or radians
     public final double bloomDecayRate = 0.04D; //The amount to subtract from current_bloom (if it's above 0) each tick
     public final int firingRate = 10; //The amount of ticks between shots
+    public final int clipSize = 6;
+    public final int clipReloadSpeed = 1;
+    public final int clipReloadThreshold = 23;
+    public final int clipReloadAmount = 6;
 
     public GunItem(Properties properties) {
         super(properties);
@@ -30,7 +34,7 @@ public class GunItem extends Item {
 
 
         if(!level.isClientSide && usedHand == InteractionHand.MAIN_HAND) {
-            if (isOnFiringCooldown(stackInHand)) return;
+            if (isOnFiringCooldown(stackInHand) || getCurrentClip(stackInHand) <= 0) return;
             double current_bloom = this.getCurrentBloom(stackInHand);
 
             level.playSound(
@@ -50,6 +54,8 @@ public class GunItem extends Item {
 
             this.setFiringCooldown(stackInHand, firingRate);
             this.setCurrentBloom(stackInHand, Math.clamp((current_bloom + 1.0F), 0F, 1F));
+            this.setCurrentClip(stackInHand, this.getCurrentClip(stackInHand) - 1);
+            this.setReloadPercentile(stackInHand, 0);
 
         }
     }
@@ -63,16 +69,23 @@ public class GunItem extends Item {
             double current_bloom = this.getCurrentBloom(stack);
             int firing_cooldown = this.getFiringCooldown(stack);
 
-            if (current_bloom != 0 || firing_cooldown != 0) {
-                MZGuns.LOGGER.info("\nFiring Cooldown: {}\nBloom: {}", firing_cooldown, current_bloom);
-            }
-
             if (this.getCurrentBloom(stack) > 0D && this.getFiringCooldown(stack) <= 0) {
                 this.setCurrentBloom(stack, Math.clamp((current_bloom - bloomDecayRate), 0, 1));
             }
             if (firing_cooldown > 0) {
                 this.setFiringCooldown(stack, firing_cooldown - 1);
             }
+
+            if ((getCurrentClip(stack) < clipSize) && this.getFiringCooldown(stack) <= 0D && !this.isOnFiringCooldown(stack)) {
+                int reloadPercentile = getReloadPercentile(stack);
+                if (reloadPercentile >= clipReloadThreshold) {
+                    setReloadPercentile(stack, 0);
+                    int currentClip = getCurrentClip(stack);
+                    int clipToAdd = Math.clamp(currentClip + clipReloadAmount, 0, clipSize);
+                    setCurrentClip(stack, clipToAdd);
+                } else {setReloadPercentile(stack, reloadPercentile + 1);}
+            }
+
         }
     }
 
@@ -106,6 +119,25 @@ public class GunItem extends Item {
     public boolean isOnFiringCooldown(ItemStack stack) {
         return getFiringCooldown(stack) > 0;
     }
+
+    public void setCurrentClip(ItemStack stack, int newValue) {
+        stack.set(ModDataComponents.CURRENT_CLIP, newValue);
+    }
+
+    public int getCurrentClip(ItemStack stack) {
+        return stack.getOrDefault(ModDataComponents.CURRENT_CLIP, 0);
+    }
+
+    public void setReloadPercentile(ItemStack stack, int newValue) {
+        stack.set(ModDataComponents.RELOAD_PERCENTILE, newValue);
+    }
+
+    public int getReloadPercentile(ItemStack stack) {
+        return stack.getOrDefault(ModDataComponents.RELOAD_PERCENTILE, 0);
+    }
+
+
+
 
 }
 

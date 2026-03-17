@@ -56,10 +56,10 @@ public class MZGuns {
 
 
 
-    private void commonSetup(FMLCommonSetupEvent event) {
-        // Some common setup code
-        LOGGER.info("HELLO FROM COMMON SETUP");
+    private void commonSetup(final FMLCommonSetupEvent event) {
+        event.enqueueWork(() -> {
 
+        });
     }
 
 //    // Add the example block item to the building blocks tab

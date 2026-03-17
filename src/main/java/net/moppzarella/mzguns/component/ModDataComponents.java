@@ -19,6 +19,10 @@ public class ModDataComponents {
             builder -> builder.persistent(Codec.INT));
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Double>> CURRENT_BLOOM = register("current_bloom",
             builder -> builder.persistent(Codec.DOUBLE ));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> CURRENT_CLIP = register("current_clip",
+            builder -> builder.persistent(Codec.INT));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> RELOAD_PERCENTILE = register("reload_percentile",
+            builder -> builder.persistent(Codec.INT));
 
     private static <T>DeferredHolder<DataComponentType<?>, DataComponentType<T>> register(String name,
                                                                                           UnaryOperator<DataComponentType.Builder<T>> builderOperator) {

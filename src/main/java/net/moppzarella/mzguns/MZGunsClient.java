@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.world.item.ItemStack;
+import net.moppzarella.mzguns.client.MZGunsHudElements;
 import net.moppzarella.mzguns.entity.ModEntities;
 import net.moppzarella.mzguns.entity.client.HitscanPelletRenderer;
 import net.moppzarella.mzguns.item.custom.GunItem;
@@ -23,6 +24,9 @@ import net.neoforged.neoforge.network.PacketDistributor;
 
 @EventBusSubscriber(modid = MZGuns.MODID, value = Dist.CLIENT)
 public class MZGunsClient {
+
+    public static boolean debugHudEnabled = false;
+
     public MZGunsClient(ModContainer container) {
         // Allows NeoForge to create a config screen for this mod's configs.
         // The config screen is accessed by going to the Mods screen > clicking on your mod > clicking on config.
@@ -44,5 +48,10 @@ public class MZGunsClient {
     @SubscribeEvent
     static void onClientSetup(FMLClientSetupEvent event) {
         EntityRenderers.register(ModEntities.HITSCAN_PELLET.get(), HitscanPelletRenderer::new);
+
+        MZGuns.LOGGER.info("Initializing Config Bullshit");
+        debugHudEnabled = Config.DEBUG_HUD_ENABLED.getAsBoolean();
+        MZGunsHudElements.init();
+
     }
 }
