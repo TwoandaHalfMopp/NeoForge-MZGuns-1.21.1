@@ -39,7 +39,6 @@ public class GunItem extends Item {
         if(!level.isClientSide && usedHand == InteractionHand.MAIN_HAND) {
             if (isOnFiringCooldown(stackInHand) || getCurrentClip(stackInHand) <= 0) return;
             double current_bloom = this.getCurrentBloom(stackInHand);
-
             level.playSound(
                     null,
                     player.getX(),
@@ -63,11 +62,27 @@ public class GunItem extends Item {
         }
     }
 
+    @Override
+    public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
+        //return !oldStack.equals(newStack); // !ItemStack.areItemStacksEqual(oldStack, newStack);
+
+        if (oldStack.getItem() instanceof GunItem gunItem && oldStack.getItem().equals(newStack.getItem())) {
+            int firing_cooldown = gunItem.getFiringCooldown(oldStack);
+            double bloom = gunItem.getCurrentBloom(oldStack);
+
+            //if this is true, that would imply it was just fired.
+            return firing_cooldown == firingRate;
+        }
+        return !oldStack.equals(newStack); // !ItemStack.areItemStacksEqual(oldStack, newStack);
+    }
+
 
 
 
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
         if (!level.isClientSide) {
+
+            this.shouldCauseReequipAnimation(stack, stack, false);
 
             double current_bloom = this.getCurrentBloom(stack);
             int firing_cooldown = this.getFiringCooldown(stack);
@@ -82,7 +97,6 @@ public class GunItem extends Item {
             if ((getCurrentClip(stack) < clipSize) && this.getFiringCooldown(stack) <= 0D && !this.isOnFiringCooldown(stack)) {
                 int reloadPercentile = getReloadPercentile(stack);
                 if (reloadPercentile >= clipReloadThreshold) {
-                    //HOW DO I MAKE IT NOT RESTART THE COOLDOWN ANIMATION
                     setReloadPercentile(stack, 0);
                     int currentClip = getCurrentClip(stack);
                     int clipToAdd = Math.clamp(currentClip + clipReloadAmount, 0, clipSize);
@@ -90,16 +104,6 @@ public class GunItem extends Item {
                 } else {setReloadPercentile(stack, reloadPercentile + 1);}
             }
 
-        } else {
-            LocalPlayer local_player = (LocalPlayer) entity;
-
-            double current_bloom = this.getCurrentBloom(stack);
-            int firing_cooldown = this.getFiringCooldown(stack);
-
-            if (current_bloom > 0 || firing_cooldown > 0) {
-                //DON'T DO THE USE ANIMATION LIKE SERIOUSLY HOW DO I STOP IT FROM DOING THE USE ANIMATION
-
-            }
         }
     }
 
