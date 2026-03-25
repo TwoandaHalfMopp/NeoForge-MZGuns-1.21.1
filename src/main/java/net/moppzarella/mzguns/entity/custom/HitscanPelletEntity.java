@@ -2,8 +2,10 @@ package net.moppzarella.mzguns.entity.custom;
 
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -65,6 +67,10 @@ public class HitscanPelletEntity extends Projectile {
 
                 target.hurt(ModDamageTypes.causeBulletDamage(pLevel.registryAccess(),target,this), this.baseDamage * calculateDamageFalloff(distanceTo(target)));
                 //MZGuns.LOGGER.info("{} Blocks: {}x Damage",this.distanceTo(target),String.valueOf(calculateDamageFalloff(distanceTo(target))));
+
+                if (target != pPlayer && pPlayer instanceof ServerPlayer && !this.isSilent()) {
+                    ((ServerPlayer)pPlayer).connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.ARROW_HIT_PLAYER, 0.0F));
+                }
             }
 
             if (pLevel instanceof ServerLevel) {

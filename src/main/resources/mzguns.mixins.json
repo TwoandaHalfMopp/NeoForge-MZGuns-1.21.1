@@ -1,6 +1,6 @@
 {
-  "required": true,
-  "package": "net.moppzarella.mzguns.mixin",
+  "required": false,
+  "package": "",
   "compatibilityLevel": "JAVA_21",
   "mixins": [],
   "injectors": {
@@ -9,6 +9,5 @@
   "overwrites": {
     "requireAnnotations": true
   },
-  "client": [
-  ]
+  "client": []
 }

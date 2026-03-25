@@ -1,13 +1,16 @@
 package net.moppzarella.mzguns.item.custom;
 
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.moppzarella.mzguns.MZGuns;
@@ -79,6 +82,7 @@ public class GunItem extends Item {
             if ((getCurrentClip(stack) < clipSize) && this.getFiringCooldown(stack) <= 0D && !this.isOnFiringCooldown(stack)) {
                 int reloadPercentile = getReloadPercentile(stack);
                 if (reloadPercentile >= clipReloadThreshold) {
+                    //HOW DO I MAKE IT NOT RESTART THE COOLDOWN ANIMATION
                     setReloadPercentile(stack, 0);
                     int currentClip = getCurrentClip(stack);
                     int clipToAdd = Math.clamp(currentClip + clipReloadAmount, 0, clipSize);
@@ -86,6 +90,16 @@ public class GunItem extends Item {
                 } else {setReloadPercentile(stack, reloadPercentile + 1);}
             }
 
+        } else {
+            LocalPlayer local_player = (LocalPlayer) entity;
+
+            double current_bloom = this.getCurrentBloom(stack);
+            int firing_cooldown = this.getFiringCooldown(stack);
+
+            if (current_bloom > 0 || firing_cooldown > 0) {
+                //DON'T DO THE USE ANIMATION LIKE SERIOUSLY HOW DO I STOP IT FROM DOING THE USE ANIMATION
+
+            }
         }
     }
 
