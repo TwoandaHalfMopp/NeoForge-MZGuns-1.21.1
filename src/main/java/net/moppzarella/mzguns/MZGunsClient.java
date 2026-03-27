@@ -49,8 +49,6 @@ public class MZGunsClient {
     static void onClientSetup(FMLClientSetupEvent event) {
         EntityRenderers.register(ModEntities.HITSCAN_PELLET.get(), HitscanPelletRenderer::new);
 
-        MZGuns.LOGGER.info("Initializing Config Bullshit");
-        debugHudEnabled = Config.DEBUG_HUD_ENABLED.getAsBoolean();
         MZGunsHudElements.init();
 
     }

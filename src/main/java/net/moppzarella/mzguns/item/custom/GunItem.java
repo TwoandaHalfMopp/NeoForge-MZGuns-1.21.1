@@ -13,6 +13,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.moppzarella.mzguns.Config;
 import net.moppzarella.mzguns.MZGuns;
 import net.moppzarella.mzguns.component.ModDataComponents;
 import net.moppzarella.mzguns.entity.custom.HitscanPelletEntity;
@@ -56,7 +57,7 @@ public class GunItem extends Item {
 
             this.setFiringCooldown(stackInHand, firingRate);
             this.setCurrentBloom(stackInHand, Math.clamp((current_bloom + 1.0F), 0F, 1F));
-            this.setCurrentClip(stackInHand, this.getCurrentClip(stackInHand) - 1);
+            if (!(Config.INFINITE_CLIP_IN_CREATIVE.getAsBoolean() && player.isCreative())) this.setCurrentClip(stackInHand, this.getCurrentClip(stackInHand) - 1);
             this.setReloadPercentile(stackInHand, 0);
 
         }

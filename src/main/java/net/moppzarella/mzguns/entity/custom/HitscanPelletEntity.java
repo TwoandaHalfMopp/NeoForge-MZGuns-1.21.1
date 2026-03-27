@@ -65,11 +65,16 @@ public class HitscanPelletEntity extends Projectile {
                 Entity target = entityHitResult.getEntity();
                 //MZGuns.LOGGER.info(target.toString());
 
-                target.hurt(ModDamageTypes.causeBulletDamage(pLevel.registryAccess(),target,this), this.baseDamage * calculateDamageFalloff(distanceTo(target)));
-                //MZGuns.LOGGER.info("{} Blocks: {}x Damage",this.distanceTo(target),String.valueOf(calculateDamageFalloff(distanceTo(target))));
-
-                if (target != pPlayer && pPlayer instanceof ServerPlayer && !this.isSilent()) {
-                    ((ServerPlayer)pPlayer).connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.ARROW_HIT_PLAYER, 0.0F));
+                if (target instanceof LivingEntity livingTarget) {
+                    livingTarget.setLastHurtByPlayer(pPlayer);
+                    if (this.baseDamage == -1) {
+                        livingTarget.kill();
+                    } else {
+                        livingTarget.hurt(ModDamageTypes.causeBulletDamage(pLevel.registryAccess(),target,pPlayer), this.baseDamage * calculateDamageFalloff(distanceTo(target)));
+                    }
+                    if (livingTarget != pPlayer && pPlayer instanceof ServerPlayer && !this.isSilent()) {
+                        ((ServerPlayer)pPlayer).connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.ARROW_HIT_PLAYER, 0.0F));
+                    }
                 }
             }
 
