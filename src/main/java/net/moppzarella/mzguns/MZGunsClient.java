@@ -25,8 +25,6 @@ import net.neoforged.neoforge.network.PacketDistributor;
 @EventBusSubscriber(modid = MZGuns.MODID, value = Dist.CLIENT)
 public class MZGunsClient {
 
-    public static boolean debugHudEnabled = false;
-
     public MZGunsClient(ModContainer container) {
         // Allows NeoForge to create a config screen for this mod's configs.
         // The config screen is accessed by going to the Mods screen > clicking on your mod > clicking on config.
