@@ -14,12 +14,10 @@ import net.moppzarella.mzguns.item.custom.GunItem;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
-import net.neoforged.neoforge.network.handling.IPayloadHandler;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 @EventBusSubscriber(modid = MZGuns.MODID)
-public class PrimaryFireHandler {
+public class OneHandedGunFiringHandler {
 
     @SubscribeEvent
     public static void register(final RegisterPayloadHandlersEvent event) {
@@ -33,10 +31,22 @@ public class PrimaryFireHandler {
                     Level level = context.player().level();
                     Item gun_that_the_player_is_using = player.getItemInHand(InteractionHand.MAIN_HAND).getItem();
                     if(payload.primaryfirekeydown && gun_that_the_player_is_using instanceof GunItem) {
-                        ((GunItem) gun_that_the_player_is_using).primaryFire(level, player, InteractionHand.MAIN_HAND);
-
+                        ((GunItem) gun_that_the_player_is_using).onAttackOrUse(level, player, InteractionHand.MAIN_HAND, player.getItemInHand(InteractionHand.MAIN_HAND));
                     }
+                }
+        );
+        registrar.playToServer(
+                IsAlternateFireKeyPressed.IS_ALTERNATE_FIRE_KEY_PRESSED_TYPE,
+                IsAlternateFireKeyPressed.IS_ALTERNATE_FIRE_KEY_PRESSED_STREAM_CODEC,
+                (payload, context) -> {
 
+                    Player player = context.player();
+                    Level level = context.player().level();
+                    Item gun_that_the_player_is_using = player.getItemInHand(InteractionHand.OFF_HAND).getItem();
+                    if(payload.alternatefirekeydown && gun_that_the_player_is_using instanceof GunItem) {
+                        MZGuns.LOGGER.info("alternatefirekeydown");
+                        ((GunItem) gun_that_the_player_is_using).onAttackOrUse(level, player, InteractionHand.OFF_HAND, player.getItemInHand(InteractionHand.OFF_HAND));
+                    }
                 }
         );
     }
@@ -55,6 +65,24 @@ public class PrimaryFireHandler {
         @Override
         public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
             return IS_PRIMARY_FIRE_KEY_PRESSED_TYPE;
+        }
+
+    }
+
+    public record IsAlternateFireKeyPressed(boolean alternatefirekeydown) implements CustomPacketPayload {
+
+        public static final CustomPacketPayload.Type<IsAlternateFireKeyPressed> IS_ALTERNATE_FIRE_KEY_PRESSED_TYPE =
+                new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(MZGuns.MODID, "isalternatefirekeypressed"));
+
+        public static final StreamCodec<ByteBuf, IsAlternateFireKeyPressed> IS_ALTERNATE_FIRE_KEY_PRESSED_STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.BOOL,
+                IsAlternateFireKeyPressed::alternatefirekeydown,
+                IsAlternateFireKeyPressed::new
+        );
+
+        @Override
+        public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+            return IS_ALTERNATE_FIRE_KEY_PRESSED_TYPE;
         }
 
     }

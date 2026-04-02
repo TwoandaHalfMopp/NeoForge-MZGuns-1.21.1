@@ -11,7 +11,7 @@ public class Config {
     private static final ModConfigSpec.Builder COMMON_BUILDER = new ModConfigSpec.Builder();
 
     public enum GunGUILocations {
-        HOTBAR_SIDE, HOTBAR_ABOVE, CROSSHAIR
+        HOTBAR_SIDE, ABOVE_HOTBAR, CROSSHAIR_SIDE, BELOW_CROSSHAIR
     }
 
     public static final ModConfigSpec.BooleanValue INFINITE_CLIP_IN_CREATIVE = COMMON_BUILDER

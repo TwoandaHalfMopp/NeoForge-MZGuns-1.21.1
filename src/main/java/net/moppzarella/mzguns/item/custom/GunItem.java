@@ -4,12 +4,14 @@ package net.moppzarella.mzguns.item.custom;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.moppzarella.mzguns.Config;
+import net.moppzarella.mzguns.MZGuns;
 import net.moppzarella.mzguns.component.ModDataComponents;
 import net.moppzarella.mzguns.entity.custom.HitscanPelletEntity;
 
@@ -27,11 +29,27 @@ public class GunItem extends Item {
         super(properties);
     }
 
+    public void onAttackOrUse(Level level, Player player, InteractionHand usedHand, ItemStack stack) {
+        if (!level.isClientSide) {
+            switch (usedHand) {
+                case MAIN_HAND: {
+                    if(player.getMainHandItem() == stack) {
+                        primaryFire(level, player, usedHand);
+                    }
+                }
+                case OFF_HAND: {
+                    if(player.getOffhandItem() == stack) {
+                        MZGuns.LOGGER.info("offhandItem");
+                        primaryFire(level, player, usedHand);
+                    }
+                }
+            }
+        }
+    }
+
     public void primaryFire(Level level, Player player, InteractionHand usedHand) {
         ItemStack stackInHand = player.getItemInHand(usedHand);
-
-
-        if(!level.isClientSide && usedHand == InteractionHand.MAIN_HAND) {
+        if(!level.isClientSide) {
             if (isOnFiringCooldown(stackInHand) || getCurrentClip(stackInHand) <= 0) return;
             double current_bloom = this.getCurrentBloom(stackInHand);
             level.playSound(
@@ -52,21 +70,19 @@ public class GunItem extends Item {
             this.setFiringCooldown(stackInHand, firingRate);
             this.setCurrentBloom(stackInHand, Math.clamp((current_bloom + 1.0F), 0F, 1F));
             if (!(Config.INFINITE_CLIP_IN_CREATIVE.getAsBoolean() && player.isCreative())) this.setCurrentClip(stackInHand, this.getCurrentClip(stackInHand) - 1);
-            this.setReloadPercentile(stackInHand, 0);
+            this.setReloadProgress(stackInHand, 0);
 
         }
     }
 
     @Override
     public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
-        //return !oldStack.equals(newStack); // !ItemStack.areItemStacksEqual(oldStack, newStack);
 
         if (oldStack.getItem() instanceof GunItem gunItem && oldStack.getItem().equals(newStack.getItem())) {
-            int firing_cooldown = gunItem.getFiringCooldown(oldStack);
-            //if this is true, that would imply it was just fired.
+            int firing_cooldown = gunItem.getFiringCooldown(oldStack); //if this is true, that would imply it was just fired.
             return firing_cooldown == firingRate;
         }
-        return !oldStack.equals(newStack); // !ItemStack.areItemStacksEqual(oldStack, newStack);
+        return !oldStack.equals(newStack);
     }
 
 
@@ -88,13 +104,14 @@ public class GunItem extends Item {
             }
 
             if ((getCurrentClip(stack) < clipSize) && this.getFiringCooldown(stack) <= 0D && !this.isOnFiringCooldown(stack)) {
-                int reloadPercentile = getReloadPercentile(stack);
-                if (reloadPercentile >= clipReloadSpeed) {
-                    setReloadPercentile(stack, 0);
+                int reloadProgress = getReloadProgress(stack);
+                if (reloadProgress >= clipReloadSpeed) {
+                    setReloadProgress(stack, 0);
                     int currentClip = getCurrentClip(stack);
                     int clipToAdd = Math.clamp(currentClip + clipReloadAmount, 0, clipSize);
                     setCurrentClip(stack, clipToAdd);
-                } else {setReloadPercentile(stack, reloadPercentile + 1);}
+                } else {
+                    setReloadProgress(stack, reloadProgress + 1);}
             }
 
         }
@@ -139,11 +156,11 @@ public class GunItem extends Item {
         return stack.getOrDefault(ModDataComponents.CURRENT_CLIP, 0);
     }
 
-    public void setReloadPercentile(ItemStack stack, int newValue) {
+    public void setReloadProgress(ItemStack stack, int newValue) {
         stack.set(ModDataComponents.RELOAD_PERCENTILE, newValue);
     }
 
-    public int getReloadPercentile(ItemStack stack) {
+    public int getReloadProgress(ItemStack stack) {
         return stack.getOrDefault(ModDataComponents.RELOAD_PERCENTILE, 0);
     }
 
