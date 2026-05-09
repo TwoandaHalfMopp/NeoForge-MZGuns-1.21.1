@@ -19,12 +19,12 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.network.PacketDistributor;
+import org.spongepowered.asm.mixin.Unique;
 
 @Mod(value = MZGuns.MODID, dist = Dist.CLIENT)
 
 @EventBusSubscriber(modid = MZGuns.MODID, value = Dist.CLIENT)
 public class MZGunsClient {
-
     public MZGunsClient(ModContainer container) {
         // Allows NeoForge to create a config screen for this mod's configs.
         // The config screen is accessed by going to the Mods screen > clicking on your mod > clicking on config.
@@ -37,13 +37,8 @@ public class MZGunsClient {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player != null) {
             ItemStack stackInMainHand = player.getMainHandItem();
-            ItemStack stackInOffHand = player.getOffhandItem();
             if (Minecraft.getInstance().options.keyAttack.isDown() && stackInMainHand.getItem() instanceof GunItem) {
                 PacketDistributor.sendToServer(new OneHandedGunFiringHandler.IsPrimaryFireKeyPressed(true));
-            }
-            if (Minecraft.getInstance().options.keyUse.isDown() && stackInOffHand.getItem() instanceof GunItem) {
-                MZGuns.LOGGER.info("keyUse.isDown");
-                PacketDistributor.sendToServer(new OneHandedGunFiringHandler.IsAlternateFireKeyPressed(true));
             }
         }
     }
