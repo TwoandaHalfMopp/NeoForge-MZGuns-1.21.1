@@ -15,10 +15,10 @@ public class ModCreativeModeTabs {
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MZGuns.MODID);
 
     public static final Supplier<CreativeModeTab> GUNS_TAB = CREATIVE_MODE_TAB.register("guns_tab",
-            () -> CreativeModeTab.builder().icon(() -> new ItemStack(ModItems.BETA_GUN.get()))
+            () -> CreativeModeTab.builder().icon(() -> new ItemStack(ModItems.REVOLVER.get()))
                     .title(Component.translatable("creativetab.mzguns.guns"))
                     .displayItems((itemDisplayParameters, output) -> {
-                        output.accept(ModItems.BETA_GUN);
+                        output.accept(ModItems.REVOLVER);
                     }).build()
             );
 

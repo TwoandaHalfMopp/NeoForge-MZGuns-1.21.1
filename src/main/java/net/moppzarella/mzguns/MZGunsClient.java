@@ -7,7 +7,7 @@ import net.minecraft.world.item.ItemStack;
 import net.moppzarella.mzguns.client.MZGunsHudElements;
 import net.moppzarella.mzguns.entity.ModEntities;
 import net.moppzarella.mzguns.entity.client.HitscanPelletRenderer;
-import net.moppzarella.mzguns.item.custom.GunItem;
+import net.moppzarella.mzguns.item.custom.BaseGunItem;
 import net.moppzarella.mzguns.network.OneHandedGunFiringHandler;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -19,7 +19,6 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.network.PacketDistributor;
-import org.spongepowered.asm.mixin.Unique;
 
 @Mod(value = MZGuns.MODID, dist = Dist.CLIENT)
 
@@ -37,7 +36,7 @@ public class MZGunsClient {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player != null) {
             ItemStack stackInMainHand = player.getMainHandItem();
-            if (Minecraft.getInstance().options.keyAttack.isDown() && stackInMainHand.getItem() instanceof GunItem) {
+            if (Minecraft.getInstance().options.keyAttack.isDown() && stackInMainHand.getItem() instanceof BaseGunItem) {
                 PacketDistributor.sendToServer(new OneHandedGunFiringHandler.IsPrimaryFireKeyPressed(true));
             }
         }

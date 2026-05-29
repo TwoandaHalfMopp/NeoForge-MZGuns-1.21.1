@@ -8,7 +8,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.moppzarella.mzguns.MZGuns;
-import net.moppzarella.mzguns.item.custom.GunItem;
+import net.moppzarella.mzguns.item.custom.BaseGunItem;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -23,7 +23,7 @@ public class ClientPreventAttackWhenHoldingGun {
         if(player == null) return;
 
         ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
-        if(itemInHand.getItem() instanceof GunItem && event.isAttack()) {
+        if(itemInHand.getItem() instanceof BaseGunItem && event.isAttack()) {
             HitResult hitResult = Minecraft.getInstance().hitResult;
             if (hitResult instanceof EntityHitResult entityHitResult && entityHitResult.getEntity() instanceof ItemFrame) {
                 return;

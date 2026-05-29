@@ -8,8 +8,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.moppzarella.mzguns.Config;
-import net.moppzarella.mzguns.MZGuns;
-import net.moppzarella.mzguns.item.custom.GunItem;
+import net.moppzarella.mzguns.item.custom.BaseGunItem;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2i;
 
@@ -32,10 +31,10 @@ public class MZGunsHudElements implements LayeredDraw.Layer {
         for (InteractionHand hand : InteractionHand.values()) {
             if (!player.getItemInHand(hand).isEmpty()) {
                 ItemStack stack = player.getItemInHand(hand);
-                if (stack.getItem() instanceof GunItem gunItem) {
-                    int currentClip = gunItem.getCurrentClip(stack);
-                    int maxClip = gunItem.clipSize;
-                    int reloadProgress = (int) (((double)gunItem.getReloadProgress(stack) / (double)gunItem.clipReloadSpeed) * 100D);
+                if (stack.getItem() instanceof BaseGunItem baseGunItem) {
+                    int currentClip = baseGunItem.getCurrentClip(stack);
+                    int maxClip = baseGunItem.getClipSize();
+                    int reloadProgress = (int) (((double) baseGunItem.getReloadProgress(stack) / (double) baseGunItem.getReloadCycleLength()) * 100D);
                     String itemName = stack.getHoverName().getString();
                     Vector2i guiElementPosition = new Vector2i(0,0);
 
