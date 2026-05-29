@@ -10,6 +10,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.moppzarella.mzguns.Config;
+import net.moppzarella.mzguns.MZGuns;
 import net.moppzarella.mzguns.component.ModDataComponents;
 import net.moppzarella.mzguns.entity.custom.HitscanPelletEntity;
 
@@ -50,7 +51,31 @@ public class BaseGunItem extends Item {
     }
 
     public void primaryFire(Level level, Player player, InteractionHand usedHand) {
+        ItemStack stackInHand = player.getItemInHand(usedHand);
+        if(!level.isClientSide) {
+            if (isOnFiringCooldown(stackInHand) || getCurrentClip(stackInHand) == 0) return;
+            double current_bloom = this.getCurrentBloom(stackInHand);
 
+            shootPellets(level, player, usedHand);
+
+
+            this.setFiringCooldown(stackInHand, getFiringInterval());
+            this.setCurrentBloom(stackInHand, Math.clamp((current_bloom + bloomPerShot), 0D, 1D));
+            if (!(Config.INFINITE_CLIP_IN_CREATIVE.getAsBoolean() && player.isCreative() && getClipSize() != -1)) this.setCurrentClip(stackInHand, this.getCurrentClip(stackInHand) - 1);
+            this.setReloadProgress(stackInHand, 0);
+
+        }
+    }
+    public void shootPellets(Level level, Player player, InteractionHand usedHand) {
+        level.playSound(
+                null,
+                player.getX(),
+                player.getY(),
+                player.getZ(),
+                SoundEvents.BREEZE_WIND_CHARGE_BURST,
+                SoundSource.NEUTRAL,
+                0.25F,
+                0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F));
     }
 
     @Override

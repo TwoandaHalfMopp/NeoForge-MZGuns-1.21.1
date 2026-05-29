@@ -1,6 +1,6 @@
 {
   "required": false,
-  "package": "",
+  "package": "net.moppzarella.mzguns.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [],
   "injectors": {
@@ -9,5 +9,7 @@
   "overwrites": {
     "requireAnnotations": true
   },
-  "client": []
+  "client": [
+    "HumanoidModelMixin"
+  ]
 }

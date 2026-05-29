@@ -28,6 +28,10 @@ public class MZGunsHudElements implements LayeredDraw.Layer {
     }
 
     public void renderGunHudElements(@NotNull GuiGraphics guiGraphics, @NotNull DeltaTracker deltaTracker, @NotNull Minecraft mc, @NotNull Player player) {
+
+        guiGraphics.drawString(mc.font, String.valueOf(player.getYRot()), 20, 20, 0xFFFFFF);
+        guiGraphics.drawString(mc.font, String.valueOf(player.getYHeadRot()), 20, 20 + mc.font.lineHeight + 2, 0xFFFFFF);
+
         for (InteractionHand hand : InteractionHand.values()) {
             if (!player.getItemInHand(hand).isEmpty()) {
                 ItemStack stack = player.getItemInHand(hand);
