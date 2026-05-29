@@ -56,7 +56,8 @@ public class BaseGunItem extends Item {
             if (isOnFiringCooldown(stackInHand) || getCurrentClip(stackInHand) == 0) return;
             double current_bloom = this.getCurrentBloom(stackInHand);
 
-            shootPellets(level, player, usedHand);
+            playFiringSound(level, player, usedHand);
+            shootPellets(level, player, usedHand, stackInHand);
 
 
             this.setFiringCooldown(stackInHand, getFiringInterval());
@@ -66,16 +67,12 @@ public class BaseGunItem extends Item {
 
         }
     }
-    public void shootPellets(Level level, Player player, InteractionHand usedHand) {
-        level.playSound(
-                null,
-                player.getX(),
-                player.getY(),
-                player.getZ(),
-                SoundEvents.BREEZE_WIND_CHARGE_BURST,
-                SoundSource.NEUTRAL,
-                0.25F,
-                0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F));
+
+    public void playFiringSound(Level level, Player player, InteractionHand usedHand) {
+
+    }
+    public void shootPellets(Level level, Player player, InteractionHand usedHand, ItemStack stack) {
+
     }
 
     @Override

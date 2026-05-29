@@ -15,32 +15,24 @@ public class RevolverItem extends BaseGunItem{
     }
 
     @Override
-    public void primaryFire(Level level, Player player, InteractionHand usedHand) {
-        ItemStack stackInHand = player.getItemInHand(usedHand);
-        if(!level.isClientSide) {
-            MZGuns.LOGGER.info(isOnFiringCooldown(stackInHand) + ", " + getCurrentClip(stackInHand));
-            if (isOnFiringCooldown(stackInHand) || getCurrentClip(stackInHand) == 0) return;
-            double current_bloom = this.getCurrentBloom(stackInHand);
-            level.playSound(
-                    null,
-                    player.getX(),
-                    player.getY(),
-                    player.getZ(),
-                    SoundEvents.BREEZE_WIND_CHARGE_BURST,
-                    SoundSource.NEUTRAL,
-                    0.25F,
-                    0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F));
+    public void shootPellets(Level level, Player player, InteractionHand usedHand, ItemStack stack) {
+        float randPitch = (float) ((Math.random() - 0.5) * 2 * (this.getCurrentBloom(stack) * this.getMaxBloomRadius()));
+        float randYaw = (float) ((Math.random() - 0.5) * 2 * (this.getCurrentBloom(stack) * getMaxBloomRadius()));
 
-            float randPitch = (float) ((Math.random() - 0.5) * 2 * (current_bloom * getMaxBloomRadius()));
-            float randYaw = (float) ((Math.random() - 0.5) * 2 * (current_bloom * getMaxBloomRadius()));
+        spawnPellet(level, player, usedHand, randYaw, randPitch, getBaseDamage());
+    }
 
-            spawnPellet(level, player, usedHand, randYaw, randPitch, getBaseDamage());
-
-            this.setFiringCooldown(stackInHand, getFiringInterval());
-            this.setCurrentBloom(stackInHand, Math.clamp((current_bloom + 1.0F), 0F, 1F));
-            if (!(Config.INFINITE_CLIP_IN_CREATIVE.getAsBoolean() && player.isCreative() && getClipSize() != -1)) this.setCurrentClip(stackInHand, this.getCurrentClip(stackInHand) - 1);
-            this.setReloadProgress(stackInHand, 0);
-
-        }
+    @Override
+    public void playFiringSound(Level level, Player player, InteractionHand usedHand) {
+        level.playSound(
+                null,
+                player.getX(),
+                player.getY(),
+                player.getZ(),
+                SoundEvents.BREEZE_WIND_CHARGE_BURST,
+                SoundSource.NEUTRAL,
+                0.25F,
+                0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F)
+        );
     }
 }
