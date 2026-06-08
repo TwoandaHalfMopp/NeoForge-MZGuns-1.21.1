@@ -29,16 +29,13 @@ public class MZGunsHudElements implements LayeredDraw.Layer {
 
     public void renderGunHudElements(@NotNull GuiGraphics guiGraphics, @NotNull DeltaTracker deltaTracker, @NotNull Minecraft mc, @NotNull Player player) {
 
-        guiGraphics.drawString(mc.font, String.valueOf(player.getYRot()), 20, 20, 0xFFFFFF);
-        guiGraphics.drawString(mc.font, String.valueOf(player.getYHeadRot()), 20, 20 + mc.font.lineHeight + 2, 0xFFFFFF);
-
         for (InteractionHand hand : InteractionHand.values()) {
             if (!player.getItemInHand(hand).isEmpty()) {
                 ItemStack stack = player.getItemInHand(hand);
                 if (stack.getItem() instanceof BaseGunItem baseGunItem) {
                     int currentClip = baseGunItem.getCurrentClip(stack);
                     int maxClip = baseGunItem.getClipSize();
-                    int reloadProgress = (int) (((double) baseGunItem.getReloadProgress(stack) / (double) baseGunItem.getReloadCycleLength()) * 100D);
+                    int reloadProgress = (int) (((double) baseGunItem.getReloadProgress(stack) / (double) baseGunItem.getCurrentReloadCycleLength(stack)) * 100D);
                     String itemName = stack.getHoverName().getString();
                     Vector2i guiElementPosition = new Vector2i(0,0);
 

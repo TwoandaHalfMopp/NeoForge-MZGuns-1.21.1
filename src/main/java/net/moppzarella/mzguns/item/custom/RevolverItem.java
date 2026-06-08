@@ -11,7 +11,7 @@ import net.moppzarella.mzguns.MZGuns;
 
 public class RevolverItem extends BaseGunItem{
     public RevolverItem(int clipSize, float baseDamage, int firingInterval, int reloadCycleLength, int reloadCycleAmount, double bloomPerShot, double bloomRefreshRate, double maxBloomRadius, Properties properties) {
-        super(clipSize, baseDamage, firingInterval, reloadCycleLength, reloadCycleAmount, bloomPerShot, bloomRefreshRate, maxBloomRadius, properties);
+        super(clipSize, baseDamage, firingInterval, reloadCycleLength, 0, reloadCycleAmount, bloomPerShot, bloomRefreshRate, maxBloomRadius, properties);
     }
 
     @Override

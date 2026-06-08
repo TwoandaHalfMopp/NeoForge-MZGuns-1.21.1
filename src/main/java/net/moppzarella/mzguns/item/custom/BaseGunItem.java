@@ -1,5 +1,7 @@
 package net.moppzarella.mzguns.item.custom;
 
+import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -18,7 +20,8 @@ public class BaseGunItem extends Item {
     private final float baseDamage; //The amount of damage one pellet deals, with no falloff. If this is set to -1, pellets are considered instant-kill
     private final int clipSize; //How many shots in a clip. If this is set to -1, it's counted as an infinite clip.
     private final int firingInterval; //How many ticks between shots. Cannot be less than 4. Must be divisible by 4.
-    private final int reloadCycleLength; //How many ticks it takes to perform one reload cycle.
+    private final int reloadInitialCycleLength; //How many ticks it takes to perform the initial reload.
+    private final int reloadConsecutiveCycleLength; //How many ticks it takes to perform consecutive reload (only used for items that reload one bullet at a time)
     private final int reloadCycleAmount; //How many shots get reloaded per reload cycle.
 
     private final double bloomPerShot; //How much Bloom gets added per shot (Bloom goes from 0-1. 0 means no bloom, 1 means max bloom).
@@ -26,13 +29,14 @@ public class BaseGunItem extends Item {
     private final double maxBloomRadius; //Maximum radius for bloom (inaccuracy). I don't know if this is degrees or radians.
 
 
-    public BaseGunItem(int clipSize, float baseDamage, int firingInterval, int reloadCycleLength, int reloadCycleAmount, double bloomPerShot, double bloomRefreshRate, double maxBloomRadius, Properties properties) {
+    public BaseGunItem(int clipSize, float baseDamage, int firingInterval, int reloadInitialCycleLength, int reloadConsecutiveCycleLength, int reloadCycleAmount, double bloomPerShot, double bloomRefreshRate, double maxBloomRadius, Properties properties) {
         super(properties);
 
         this.baseDamage = baseDamage;
         this.clipSize = clipSize;
         this.firingInterval = firingInterval;
-        this.reloadCycleLength = reloadCycleLength;
+        this.reloadInitialCycleLength = reloadInitialCycleLength;
+        this.reloadConsecutiveCycleLength = reloadConsecutiveCycleLength;
         this.reloadCycleAmount = reloadCycleAmount;
         this.bloomPerShot = bloomPerShot;
         this.bloomRefreshRate = bloomRefreshRate;
@@ -64,6 +68,7 @@ public class BaseGunItem extends Item {
             this.setCurrentBloom(stackInHand, Math.clamp((current_bloom + bloomPerShot), 0D, 1D));
             if (!(Config.INFINITE_CLIP_IN_CREATIVE.getAsBoolean() && player.isCreative() && getClipSize() != -1)) this.setCurrentClip(stackInHand, this.getCurrentClip(stackInHand) - 1);
             this.setReloadProgress(stackInHand, 0);
+            this.setReloadStatus(stackInHand, true);
 
         }
     }
@@ -86,7 +91,7 @@ public class BaseGunItem extends Item {
     }
 
     public void spawnPellet(Level level, Player player, InteractionHand usedHand, double yawOffset, double pitchOffset, float damage) {
-        HitscanPelletEntity temp_bullet = new HitscanPelletEntity(level, player, damage);
+        HitscanPelletEntity temp_bullet = new HitscanPelletEntity(level, player, player.getItemInHand(usedHand), damage);
         temp_bullet.setPos(player.getX(), player.getEyeY() - 0.25, player.getZ());
 
         temp_bullet.setYRot(player.getYRot() + (float)yawOffset);
@@ -97,6 +102,10 @@ public class BaseGunItem extends Item {
 
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
         if (!level.isClientSide) {
+
+            if (isInitialReload(stack) && !(((Player) entity).getItemInHand(InteractionHand.MAIN_HAND).equals(stack) || ((Player) entity).getItemInHand(InteractionHand.OFF_HAND).equals(stack))) {
+                setReloadStatus(stack, true);
+            }
 
             this.shouldCauseReequipAnimation(stack, stack, false);
 
@@ -112,15 +121,23 @@ public class BaseGunItem extends Item {
 
             if ((getCurrentClip(stack) < getClipSize()) && this.getFiringCooldown(stack) <= 0D && !this.isOnFiringCooldown(stack) && (((Player) entity).getMainHandItem() == stack || ((Player) entity).getOffhandItem() == stack) && getClipSize() != -1) {
                 int reloadProgress = getReloadProgress(stack);
-                if (reloadProgress >= getReloadCycleLength()) {
+                //MZGuns.LOGGER.info(String.valueOf(getCurrentReloadCycleLength(stack)));
+                if (reloadProgress >= getCurrentReloadCycleLength(stack)) {
                     setReloadProgress(stack, 0);
                     int currentClip = getCurrentClip(stack);
                     int clipToAdd = Math.clamp(currentClip + getReloadCycleAmount(), 0, getClipSize());
                     setCurrentClip(stack, clipToAdd);
+                    setReloadStatus(stack, false);
                 } else {
                     setReloadProgress(stack, reloadProgress + 1);}
             } else if (getReloadProgress(stack) != 0 && !(((Player) entity).getMainHandItem() == stack || ((Player) entity).getOffhandItem() == stack)) {
                 setReloadProgress(stack, 0);
+            }
+
+            if (this.shouldPlayHitsound(stack)) {
+                //MZGuns.LOGGER.info("Playing Hitsound");
+                ((ServerPlayer)entity).connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.ARROW_HIT_PLAYER, 0.0F));
+                this.updateHitsoundChecK(stack, false);
             }
 
         }
@@ -129,7 +146,16 @@ public class BaseGunItem extends Item {
     public final float getBaseDamage() {return this.baseDamage;}
     public final int getClipSize() {return this.clipSize;}
     public final int getFiringInterval() {return this.firingInterval;}
-    public final int getReloadCycleLength() {return this.reloadCycleLength;}
+    public final int getCurrentReloadCycleLength(ItemStack stack) {
+        //MZGuns.LOGGER.info(String.valueOf(isInitialReload(stack)));
+        if (isInitialReload(stack)) {
+            return getReloadInitialCycleLength();}
+        else {return getReloadConsecutiveCycleLength();}
+    }
+    public boolean isInitialReload(ItemStack stack) {return stack.getOrDefault(ModDataComponents.IS_INITIAL_RELOAD, false);}
+    public void setReloadStatus(ItemStack stack, boolean value) {stack.set(ModDataComponents.IS_INITIAL_RELOAD, value);}
+    public final int getReloadInitialCycleLength() {return this.reloadInitialCycleLength;}
+    public final int getReloadConsecutiveCycleLength() {return this.reloadConsecutiveCycleLength;}
     public final int getReloadCycleAmount() {return this.reloadCycleAmount;}
 
     public final double getBloomPerShot() {return this.bloomPerShot;}
@@ -153,4 +179,8 @@ public class BaseGunItem extends Item {
     public void setReloadProgress(ItemStack stack, int newValue) {stack.set(ModDataComponents.RELOAD_PERCENTILE, newValue);}
 
     public int getReloadProgress(ItemStack stack) {return stack.getOrDefault(ModDataComponents.RELOAD_PERCENTILE, 0);}
+
+    public boolean shouldPlayHitsound(ItemStack stack) {return stack.getOrDefault(ModDataComponents.SHOULD_PLAY_HITSOUND, false);}
+
+    public void updateHitsoundChecK(ItemStack stack, boolean newValue) {stack.set(ModDataComponents.SHOULD_PLAY_HITSOUND, newValue);}
 }

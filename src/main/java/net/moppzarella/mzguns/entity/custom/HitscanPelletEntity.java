@@ -13,26 +13,30 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.moppzarella.mzguns.entity.ModEntities;
+import net.moppzarella.mzguns.item.custom.BaseGunItem;
 import net.moppzarella.mzguns.util.LaserPointerHitHelper;
 import net.moppzarella.mzguns.util.ModDamageTypes;
 import org.joml.Vector3f;
 
 public class HitscanPelletEntity extends Projectile {
-    private float baseDamage = 8.0F;
+    private float baseDamage;
+    private ItemStack sourceGun;
     private final float particleRenderDistanceThreshold = 1.5F;
 
     public HitscanPelletEntity(EntityType<? extends Projectile> entityType, Level level) {
         super(entityType, level);
     }
 
-    public HitscanPelletEntity(Level level, LivingEntity shooter, float baseDamage) {
+    public HitscanPelletEntity(Level level, LivingEntity shooter, ItemStack sourceGun, float baseDamage) {
         super(ModEntities.HITSCAN_PELLET.get(), level);
+        this.sourceGun = sourceGun;
         this.baseDamage = baseDamage;
         this.setOwner(shooter);
     }
@@ -71,7 +75,9 @@ public class HitscanPelletEntity extends Projectile {
                         livingTarget.hurt(ModDamageTypes.causeBulletDamage(pLevel.registryAccess(),target,pPlayer), this.baseDamage * calculateDamageFalloff(distanceTo(target)));
                     }
                     if (livingTarget != pPlayer && pPlayer instanceof ServerPlayer && !this.isSilent()) {
-                        ((ServerPlayer)pPlayer).connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.ARROW_HIT_PLAYER, 0.0F));
+                        if (sourceGun.getItem() instanceof BaseGunItem gunItem) {
+                            gunItem.updateHitsoundChecK(sourceGun, true);
+                        }
                     }
                 }
             }

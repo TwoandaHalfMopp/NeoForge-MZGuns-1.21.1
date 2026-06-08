@@ -23,6 +23,10 @@ public class ModDataComponents {
             builder -> builder.persistent(Codec.INT));
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> RELOAD_PERCENTILE = register("reload_percentile",
             builder -> builder.persistent(Codec.INT));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> SHOULD_PLAY_HITSOUND = register("should_play_hitsound",
+            builder -> builder.persistent(Codec.BOOL));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> IS_INITIAL_RELOAD = register("is_initial_reload",
+            builder -> builder.persistent(Codec.BOOL));
 
     private static <T>DeferredHolder<DataComponentType<?>, DataComponentType<T>> register(String name,
                                                                                           UnaryOperator<DataComponentType.Builder<T>> builderOperator) {
