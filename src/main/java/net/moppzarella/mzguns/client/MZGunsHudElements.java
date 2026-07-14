@@ -9,6 +9,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.moppzarella.mzguns.Config;
 import net.moppzarella.mzguns.item.custom.BaseGunItem;
+import net.moppzarella.mzguns.util.GunState;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2i;
 
@@ -33,10 +34,9 @@ public class MZGunsHudElements implements LayeredDraw.Layer {
             if (!player.getItemInHand(hand).isEmpty()) {
                 ItemStack stack = player.getItemInHand(hand);
                 if (stack.getItem() instanceof BaseGunItem baseGunItem) {
-                    int currentClip = baseGunItem.getCurrentClip(stack);
-                    int maxClip = baseGunItem.getClipSize();
-                    int reloadProgress = (int) (((double) baseGunItem.getReloadProgress(stack) / (double) baseGunItem.getCurrentReloadCycleLength(stack)) * 100D);
-                    String itemName = stack.getHoverName().getString();
+                    GunState currentState = baseGunItem.getState(stack);
+                    int stateTimer = baseGunItem.getStateTimer(stack);
+
                     Vector2i guiElementPosition = new Vector2i(0,0);
 
                     guiElementPosition.x = guiGraphics.guiWidth() / 2;
@@ -58,10 +58,8 @@ public class MZGunsHudElements implements LayeredDraw.Layer {
                                 }
                             }
 
-                            guiGraphics.drawCenteredString(mc.font, currentClip+" / "+maxClip, guiElementPosition.x, guiElementPosition.y, 0xFFFFFF);
-                            if(reloadProgress > 0){
-                                guiGraphics.drawCenteredString(mc.font, reloadProgress+"%", guiElementPosition.x, guiElementPosition.y + mc.font.lineHeight, 0x808080);
-                            }
+                            guiGraphics.drawCenteredString(mc.font, String.valueOf(currentState), guiElementPosition.x, guiElementPosition.y, 0xFFFFFF);
+                            guiGraphics.drawCenteredString(mc.font, String.valueOf(stateTimer), guiElementPosition.x, guiElementPosition.y + mc.font.lineHeight, 0x808080);
                             break;
                         }
                         case HOTBAR_SIDE: {
@@ -74,24 +72,19 @@ public class MZGunsHudElements implements LayeredDraw.Layer {
                                     break;
                                 }
                                 case OFF_HAND: {
-                                    guiElementPosition.x -= distFromCenter + mc.font.width(currentClip+" / "+maxClip) + padding;
+                                    guiElementPosition.x -= distFromCenter + mc.font.width(String.valueOf(currentState)) + padding;
                                     break;
                                 }
                             }
-                            guiGraphics.drawString(mc.font, currentClip+" / "+maxClip, guiElementPosition.x, guiElementPosition.y, 0xFFFFFF);
-                            if(reloadProgress > 0){
-                                guiGraphics.drawString(mc.font, reloadProgress+"%", guiElementPosition.x, guiElementPosition.y + mc.font.lineHeight, 0x808080);
-                            }
+                            guiGraphics.drawCenteredString(mc.font, String.valueOf(currentState), guiElementPosition.x, guiElementPosition.y, 0xFFFFFF);
+                            guiGraphics.drawCenteredString(mc.font, String.valueOf(stateTimer), guiElementPosition.x, guiElementPosition.y + mc.font.lineHeight, 0x808080);
                             break;
                         }
                     }
-
-
 
                 }
             }
         }
 
     }
-
 }

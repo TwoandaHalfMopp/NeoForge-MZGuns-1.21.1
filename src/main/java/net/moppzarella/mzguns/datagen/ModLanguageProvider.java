@@ -14,6 +14,6 @@ public class ModLanguageProvider extends LanguageProvider {
     protected void addTranslations() {
 
         add("creativetab.mzguns.guns", "MZ Guns");
-        add(ModItems.REVOLVER.toStack(), "Revolver");
+        //add(ModItems.REVOLVER.toStack(), "Revolver");
     }
 }
