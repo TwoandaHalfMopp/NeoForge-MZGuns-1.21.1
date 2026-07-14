@@ -23,19 +23,35 @@ public class BaseGunItem extends Item {
     public final float baseDamage;
     public final int clipSize;
     public final int firingInterval;
-    public final int reloadTime;
+    public final int reloadTimeInitial;
+    public final int reloadTimeConsecutive;
     public final int deployTime;
+    public final int shotsPerReload;
 
     private final int stateTimerLimit = 100;
 
-    public BaseGunItem(float baseDamage, int clipSize, int firingInterval, int reloadTime, int deployTime, Properties properties) {
+    public BaseGunItem(float baseDamage, int clipSize, int firingInterval, int reloadTimeInitial, int reloadTimeConsecutive, int deployTime, int shotsPerReload, Properties properties) {
         super(properties);
 
         this.baseDamage = baseDamage;
         this.clipSize = clipSize;
         this.firingInterval = firingInterval;
-        this.reloadTime = reloadTime;
+        this.reloadTimeInitial = reloadTimeInitial;
+        this.reloadTimeConsecutive = reloadTimeConsecutive;
         this.deployTime = deployTime;
+        this.shotsPerReload = shotsPerReload;
+    }
+
+    public BaseGunItem(float baseDamage, int clipSize, int firingInterval, int reloadTimeInitial, int deployTime, int shotsPerReload, Properties properties) {
+        super(properties);
+
+        this.baseDamage = baseDamage;
+        this.clipSize = clipSize;
+        this.firingInterval = firingInterval;
+        this.reloadTimeInitial = reloadTimeInitial;
+        this.reloadTimeConsecutive = 0;
+        this.deployTime = deployTime;
+        this.shotsPerReload = shotsPerReload;
     }
 
     //If this BaseGunItem is in the off-hand, perform primaryFire
@@ -56,18 +72,17 @@ public class BaseGunItem extends Item {
         GunState prev_state = getPrevState(stackInHand);
         int state_timer = getStateTimer(stackInHand);
         if(!level.isClientSide && canPrimaryFire(stackInHand)) {
-            shoot(level, player, stackInHand, usedHand);
+            shoot(level, player, stackInHand);
+            setState(stackInHand, GunState.ACTIVE_FIRING);
         }
     }
 
-    public void shoot(Level level, Player player, ItemStack stack, InteractionHand usedHand) {
+    public void shoot(Level level, Player player, ItemStack stack) {
         playFiringSound(level, player);
         shootPellets(level, player, stack);
         if (!(Config.INFINITE_CLIP_IN_CREATIVE.getAsBoolean() && player.isCreative() && clipSize != -1)) {
             setCurrentClip(stack, this.getCurrentClip(stack) - 1);
         }
-        setState(stack, GunState.ACTIVE_FIRING);
-
     }
 
     public void playFiringSound(Level level, Player player) {
@@ -126,7 +141,7 @@ public class BaseGunItem extends Item {
     public void runStateLogic(ItemStack stack, Level level, Player player, GunState current_state, GunState prev_state) {
         incrementStateTimer(stack);
         int state_timer = getStateTimer(stack);
-        MZGuns.LOGGER.info("STATE: {}\nTIMER: {}",current_state, state_timer);
+        //MZGuns.LOGGER.info("STATE: {}\nTIMER: {}",current_state, state_timer);
         int current_clip = getCurrentClip(stack);
         switch(current_state) {
             case GunState.HOLSTERED -> {
@@ -179,11 +194,34 @@ public class BaseGunItem extends Item {
                     setState(stack, GunState.HOLSTERED);
                     break;
                 }
-                if (state_timer >= reloadTime) {
-                    setCurrentClip(stack, clipSize);
-                    setState(stack, GunState.ACTIVE_IDLE);
+                if (state_timer >= reloadTimeInitial) {
+                    int clipToAdd = Math.clamp(current_clip + shotsPerReload, 0, clipSize);
+                    setCurrentClip(stack, clipToAdd);
+                    if(clipToAdd < clipSize) {
+                        setState(stack, GunState.ACTIVE_RELOAD_CONSECUTIVE);
+                        break;
+                    } else {
+                        setState(stack, GunState.ACTIVE_IDLE);
+                    }
                 }
             }
+            case GunState.ACTIVE_RELOAD_CONSECUTIVE -> {
+                if (!(player.getMainHandItem().equals(stack) || player.getOffhandItem().equals(stack))) {
+                    setState(stack, GunState.HOLSTERED);
+                    break;
+                }
+                if (state_timer >= reloadTimeConsecutive) {
+                    int clipToAdd = Math.clamp(current_clip + shotsPerReload, 0, clipSize);
+                    setCurrentClip(stack, clipToAdd);
+                    if(clipToAdd < clipSize) {
+                        setState(stack, GunState.ACTIVE_RELOAD_CONSECUTIVE);
+                        break;
+                    } else {
+                        setState(stack, GunState.ACTIVE_IDLE);
+                    }
+                }
+            }
+
         }
     }
 
@@ -208,9 +246,11 @@ public class BaseGunItem extends Item {
 
     public void setState(ItemStack stack, GunState new_state) {
         GunState current_state = getState(stack);
+        if (current_state != new_state) {
         stack.set(ModDataComponents.PREV_STATE, current_state);
         stack.set(ModDataComponents.GUN_STATE, new_state);
         resetStateTimer(stack);
+        }
     }
 
     public int getStateTimer(ItemStack stack) {

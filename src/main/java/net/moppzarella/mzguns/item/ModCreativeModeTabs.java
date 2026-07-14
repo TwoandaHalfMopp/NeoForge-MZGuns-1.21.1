@@ -19,6 +19,11 @@ public class ModCreativeModeTabs {
             () -> CreativeModeTab.builder().icon(() -> new ItemStack(Items.GUNPOWDER.asItem()))
                     .title(Component.translatable("creativetab.mzguns.guns"))
                     .displayItems((itemDisplayParameters, output) -> {
+
+                        output.accept(ModItems.PISTOL);
+                        output.accept(ModItems.SHOTGUN);
+                        output.accept(ModItems.BURST_SMG);
+
                     }).build()
             );
 

@@ -23,8 +23,8 @@ public class PistolItem extends BaseGunItem{
     public final int bloomPerShot;
     public final float bloomAngle;
 
-    public PistolItem(float baseDamage, int clipSize, int firingInterval, int reloadTime, int deployTime, int maxBloomTime, int bloomPerShot, float bloomAngle, Properties properties) {
-        super(baseDamage, clipSize, firingInterval, reloadTime, deployTime, properties);
+    public PistolItem(float baseDamage, int clipSize, int firingInterval, int reloadTime, int deployTime, int shotsPerReload, int maxBloomTime, int bloomPerShot, float bloomAngle, Properties properties) {
+        super(baseDamage, clipSize, firingInterval, reloadTime, deployTime, shotsPerReload, properties);
 
         this.baseDamage = baseDamage;
         this.clipSize = clipSize;
@@ -38,7 +38,7 @@ public class PistolItem extends BaseGunItem{
     }
 
     @Override
-    public void shoot(Level level, Player player, ItemStack stack, InteractionHand usedHand) {
+    public void shoot(Level level, Player player, ItemStack stack) {
         playFiringSound(level, player);
         shootPellets(level, player, stack);
         if (!(Config.INFINITE_CLIP_IN_CREATIVE.getAsBoolean() && player.isCreative() && clipSize != -1)) {
@@ -70,7 +70,7 @@ public class PistolItem extends BaseGunItem{
 
             runStateLogic(stack, level, player, current_state, prev_state);
             int current_bloom_time = getBloomTime(stack);
-            if (current_bloom_time > 0) {
+            if (current_bloom_time > 0 && getState(stack) != GunState.ACTIVE_FIRING) {
                 incrementBloomTime(stack);
             }
 

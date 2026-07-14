@@ -1,10 +1,12 @@
 package net.moppzarella.mzguns;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.moppzarella.mzguns.component.ModDataComponents;
 import net.moppzarella.mzguns.entity.ModEntities;
 import net.moppzarella.mzguns.item.ModCreativeModeTabs;
 import net.moppzarella.mzguns.item.ModItems;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -47,7 +49,7 @@ public class MZGuns {
         ModDataComponents.register(modEventBus);
 
         // Register the item to a creative tab
-        //modEventBus.addListener(this::addCreative);
+        modEventBus.addListener(this::addCreative);
 
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.COMMON_SPEC);
@@ -62,10 +64,12 @@ public class MZGuns {
         });
     }
 
-//    // Add the example block item to the building blocks tab
-//    private void addCreative(BuildCreativeModeTabContentsEvent event) {
-//
-//    }
+    // Add the example block item to the building blocks tab
+    private void addCreative(BuildCreativeModeTabContentsEvent event) {
+        if(event.getTabKey() == CreativeModeTabs.OP_BLOCKS) {
+            event.accept(ModItems.BETA_GUN);
+        }
+    }
 
     public static ResourceLocation makeResLoc(String path) {
         return ResourceLocation.fromNamespaceAndPath(MODID, path);
