@@ -8,10 +8,13 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.moppzarella.mzguns.Config;
+import net.moppzarella.mzguns.MZGuns;
 import net.moppzarella.mzguns.item.custom.BaseGunItem;
 import net.moppzarella.mzguns.util.GunState;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2i;
+
+import java.text.DecimalFormat;
 
 public class MZGunsHudElements implements LayeredDraw.Layer {
     public static MZGunsHudElements MZGUNS_HUD_ELEMENTS_INSTANCE;
@@ -34,54 +37,42 @@ public class MZGunsHudElements implements LayeredDraw.Layer {
             if (!player.getItemInHand(hand).isEmpty()) {
                 ItemStack stack = player.getItemInHand(hand);
                 if (stack.getItem() instanceof BaseGunItem baseGunItem) {
-                    GunState currentState = baseGunItem.getState(stack);
-                    int stateTimer = baseGunItem.getStateTimer(stack);
+                    int current_clip = baseGunItem.getCurrentClip(stack);
+                    GunState current_state = baseGunItem.getState(stack);
+                    int state_timer = baseGunItem.getStateTimer(stack);
+                    int clipSize = ((BaseGunItem) stack.getItem()).clipSize;
+                    int reloadtimeInitial = ((BaseGunItem) stack.getItem()).reloadTimeInitial;
+                    int reloadtimeConsecutive = ((BaseGunItem) stack.getItem()).reloadTimeInitial;
 
                     Vector2i guiElementPosition = new Vector2i(0,0);
 
                     guiElementPosition.x = guiGraphics.guiWidth() / 2;
                     guiElementPosition.y = guiGraphics.guiHeight() - mc.font.lineHeight;
 
-                    switch (Config.GUN_GUI_LOCATIONS.get()) {
-                        case ABOVE_HOTBAR: {
-                            int distFromCenter = 91 / 2;
-                            switch (hand) {
-                                case MAIN_HAND: {
-                                    guiElementPosition.x += distFromCenter;
-                                    guiElementPosition.y -= mc.gui.rightHeight;
-                                    break;
-                                }
-                                case OFF_HAND: {
-                                    guiElementPosition.x -= distFromCenter;
-                                    guiElementPosition.y -= mc.gui.leftHeight;
-                                    break;
-                                }
-                            }
-
-                            guiGraphics.drawCenteredString(mc.font, String.valueOf(currentState), guiElementPosition.x, guiElementPosition.y, 0xFFFFFF);
-                            guiGraphics.drawCenteredString(mc.font, String.valueOf(stateTimer), guiElementPosition.x, guiElementPosition.y + mc.font.lineHeight, 0x808080);
+                    int distFromCenter = 91 / 2;
+                    switch (hand) {
+                        case MAIN_HAND: {
+                            guiElementPosition.x += distFromCenter;
+                            guiElementPosition.y -= mc.gui.rightHeight;
                             break;
                         }
-                        case HOTBAR_SIDE: {
-                            int padding = 1;
-                            int distFromCenter = 91 + padding;
-                            guiElementPosition.y -= 24;
-                            switch (hand) {
-                                case MAIN_HAND: {
-                                    guiElementPosition.x += distFromCenter;
-                                    break;
-                                }
-                                case OFF_HAND: {
-                                    guiElementPosition.x -= distFromCenter + mc.font.width(String.valueOf(currentState)) + padding;
-                                    break;
-                                }
-                            }
-                            guiGraphics.drawCenteredString(mc.font, String.valueOf(currentState), guiElementPosition.x, guiElementPosition.y, 0xFFFFFF);
-                            guiGraphics.drawCenteredString(mc.font, String.valueOf(stateTimer), guiElementPosition.x, guiElementPosition.y + mc.font.lineHeight, 0x808080);
+                        case OFF_HAND: {
+                            guiElementPosition.x -= distFromCenter;
+                            guiElementPosition.y -= mc.gui.leftHeight;
                             break;
                         }
                     }
 
+                    guiGraphics.drawCenteredString(mc.font, stack.getHoverName(), guiElementPosition.x, guiElementPosition.y - mc.font.lineHeight, 0xFFFFFF);
+                    guiGraphics.drawCenteredString(mc.font, current_clip+" / "+clipSize, guiElementPosition.x, guiElementPosition.y, 0xFFFFFF);
+                    if(current_state == GunState.ACTIVE_RELOAD || current_state == GunState.ACTIVE_RELOAD_CONSECUTIVE) {
+                        int reload_percentile = 0;
+                        switch(current_state) {
+                            case ACTIVE_RELOAD -> reload_percentile = state_timer * 100 / reloadtimeInitial;
+                            case ACTIVE_RELOAD_CONSECUTIVE -> reload_percentile = state_timer * 100 / reloadtimeConsecutive;
+                        }
+                        guiGraphics.drawCenteredString(mc.font, reload_percentile+"%", guiElementPosition.x, guiElementPosition.y + mc.font.lineHeight, 0x808080);
+                    }
                 }
             }
         }

@@ -1,6 +1,7 @@
 package net.moppzarella.mzguns.datagen;
 
 import net.minecraft.data.PackOutput;
+import net.moppzarella.mzguns.Config;
 import net.moppzarella.mzguns.MZGuns;
 import net.moppzarella.mzguns.item.ModCreativeModeTabs;
 import net.moppzarella.mzguns.item.ModItems;

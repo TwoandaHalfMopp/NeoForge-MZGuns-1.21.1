@@ -1,5 +1,6 @@
 package net.moppzarella.mzguns.item.custom;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -7,9 +8,11 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.moppzarella.mzguns.Config;
 import net.moppzarella.mzguns.MZGuns;
@@ -29,6 +32,7 @@ public class BaseGunItem extends Item {
     public final int shotsPerReload;
 
     private final int stateTimerLimit = 100;
+    private final int useTimerLimit = 20;
 
     public BaseGunItem(float baseDamage, int clipSize, int firingInterval, int reloadTimeInitial, int reloadTimeConsecutive, int deployTime, int shotsPerReload, Properties properties) {
         super(properties);
@@ -58,9 +62,9 @@ public class BaseGunItem extends Item {
     //If it's in the main hand, do nothing.
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
-        if (!level.isClientSide && usedHand == InteractionHand.OFF_HAND){
+        if ((!level.isClientSide) && (usedHand == InteractionHand.OFF_HAND)){
             primaryFire(level, player, usedHand);
-            return InteractionResultHolder.pass(player.getItemInHand(usedHand));
+            return InteractionResultHolder.success(player.getItemInHand(usedHand));
         }
         return InteractionResultHolder.fail(player.getItemInHand(usedHand));
 
@@ -114,11 +118,32 @@ public class BaseGunItem extends Item {
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
         if(!level.isClientSide) {
+            //MZGuns.LOGGER.info(String.valueOf(isUseKeyPressed(stack)));
+
+            if (!Minecraft.getInstance().options.keyUse.isDown() && isUseKeyPressed(stack) > 0) {
+                //MZGuns.LOGGER.info("Reset isUseKeyPressed for the stack");
+                resetIsUseKeyPressed(stack);
+            }
+
             GunState current_state = getState(stack);
             GunState prev_state = getPrevState(stack);
             Player player = (Player) entity;
 
             runStateLogic(stack, level, player, current_state, prev_state);
+
+            if(isUseKeyPressed(stack) > 0) {
+                if((!player.getOffhandItem().equals(stack)) || !Minecraft.getInstance().options.keyUse.isDown()) {
+                    resetIsUseKeyPressed(stack);
+                } else {
+                    if (isUseKeyPressed(stack) > 0) {
+                        primaryFire(level, player, InteractionHand.OFF_HAND);
+                    }
+                }
+            }
+
+            if (Minecraft.getInstance().options.keyUse.isDown()) {
+                incrementIsUseKeyPressed(stack);
+            }
 
             if (this.shouldPlayHitsound(stack)) {
                 //MZGuns.LOGGER.info("Playing Hitsound");
@@ -280,6 +305,25 @@ public class BaseGunItem extends Item {
 
     public int getCurrentClip(ItemStack stack) {
         return stack.getOrDefault(ModDataComponents.CURRENT_CLIP, 0);
+    }
+
+    public int isUseKeyPressed(ItemStack stack) {
+        return stack.getOrDefault(ModDataComponents.IS_USE_KEY_PRESSED, 0);
+    }
+
+    public void resetIsUseKeyPressed(ItemStack stack) {
+        stack.set(ModDataComponents.IS_USE_KEY_PRESSED, 0);
+    }
+
+    public void incrementIsUseKeyPressed(ItemStack stack) {
+        int i = isUseKeyPressed(stack);
+        if (i < useTimerLimit) {
+            setIsUseKeyPressed(stack, i + 1);
+        }
+    }
+
+    public void setIsUseKeyPressed(ItemStack stack, int i) {
+        stack.set(ModDataComponents.IS_USE_KEY_PRESSED, i);
     }
 
 

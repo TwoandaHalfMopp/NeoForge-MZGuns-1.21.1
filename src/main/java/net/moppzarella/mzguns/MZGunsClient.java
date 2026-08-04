@@ -36,6 +36,7 @@ public class MZGunsClient {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player != null) {
             ItemStack stackInMainHand = player.getMainHandItem();
+            ItemStack stackInOffHand = player.getOffhandItem();
             if (Minecraft.getInstance().options.keyAttack.isDown() && stackInMainHand.getItem() instanceof BaseGunItem) {
                 PacketDistributor.sendToServer(new OneHandedGunFiringHandler.IsPrimaryFireKeyPressed(true));
             }
