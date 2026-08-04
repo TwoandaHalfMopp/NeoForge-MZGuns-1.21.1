@@ -60,14 +60,44 @@ public class BaseGunItem extends Item {
 
     //If this BaseGunItem is in the off-hand, perform primaryFire
     //If it's in the main hand, do nothing.
+//    @Override
+//    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
+//        if ((!level.isClientSide) && (usedHand == InteractionHand.OFF_HAND)){
+//            primaryFire(level, player, usedHand);
+//            player.startUsingItem(InteractionHand.OFF_HAND);
+//            return InteractionResultHolder.success(player.getItemInHand(usedHand));
+//        }
+//        return InteractionResultHolder.fail(player.getItemInHand(usedHand));
+//
+//    }
+
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
         if ((!level.isClientSide) && (usedHand == InteractionHand.OFF_HAND)){
-            primaryFire(level, player, usedHand);
+            player.startUsingItem(InteractionHand.OFF_HAND);
+            setIsUseKeyPressed(player.getOffhandItem(), true);
             return InteractionResultHolder.success(player.getItemInHand(usedHand));
         }
         return InteractionResultHolder.fail(player.getItemInHand(usedHand));
+    }
 
+    @Override
+    public int getUseDuration(ItemStack stack, LivingEntity entity) {
+        return 200;
+    }
+
+    @Override
+    public void onUseTick(Level level, LivingEntity livingEntity, ItemStack stack, int remainingUseDuration) {
+        if((!level.isClientSide) && (livingEntity instanceof Player player) && (player.getOffhandItem().equals(stack))) {
+            primaryFire(level, player, InteractionHand.OFF_HAND);
+        }
+    }
+
+    @Override
+    public void releaseUsing(ItemStack stack, Level level, LivingEntity livingEntity, int timeCharged) {
+        if ((!level.isClientSide) && (livingEntity instanceof Player player)) {
+            setIsUseKeyPressed(stack, false);
+        }
     }
 
     public void primaryFire(Level level, Player player, InteractionHand usedHand) {
@@ -118,12 +148,6 @@ public class BaseGunItem extends Item {
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
         if(!level.isClientSide) {
-            //MZGuns.LOGGER.info(String.valueOf(isUseKeyPressed(stack)));
-
-            if (!Minecraft.getInstance().options.keyUse.isDown() && isUseKeyPressed(stack) > 0) {
-                //MZGuns.LOGGER.info("Reset isUseKeyPressed for the stack");
-                resetIsUseKeyPressed(stack);
-            }
 
             GunState current_state = getState(stack);
             GunState prev_state = getPrevState(stack);
@@ -131,28 +155,14 @@ public class BaseGunItem extends Item {
 
             runStateLogic(stack, level, player, current_state, prev_state);
 
-            if(isUseKeyPressed(stack) > 0) {
-                if((!player.getOffhandItem().equals(stack)) || !Minecraft.getInstance().options.keyUse.isDown()) {
-                    resetIsUseKeyPressed(stack);
-                } else {
-                    if (isUseKeyPressed(stack) > 0) {
-                        primaryFire(level, player, InteractionHand.OFF_HAND);
-                    }
-                }
-            }
-
-            if (Minecraft.getInstance().options.keyUse.isDown()) {
-                incrementIsUseKeyPressed(stack);
-            }
-
             if (this.shouldPlayHitsound(stack)) {
                 //MZGuns.LOGGER.info("Playing Hitsound");
                 ((ServerPlayer)entity).connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.ARROW_HIT_PLAYER, 0.0F));
                 this.updateHitsoundChecK(stack, false);
             }
         }
-
     }
+
     public boolean canPrimaryFire(ItemStack stack) {
         GunState current_state = getState(stack);
         GunState prev_state = getPrevState(stack);
@@ -250,17 +260,21 @@ public class BaseGunItem extends Item {
         }
     }
 
-    @Override
-    public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
-
-        if (oldStack.getItem() instanceof BaseGunItem baseGunItem && oldStack.getItem().equals(newStack.getItem())) {
-            GunState current_state = getState(newStack);
-            int state_timer = getStateTimer(newStack);
-            return (current_state == GunState.ACTIVE_FIRING && state_timer == 0);
-
-        }
-        return false;
-    }
+//    @Override
+//    public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
+//
+//        if (oldStack.getItem() instanceof BaseGunItem baseGunItem && oldStack.getItem().equals(newStack.getItem())) {
+//            GunState current_state = getState(newStack);
+//            int state_timer = getStateTimer(newStack);
+//            return (current_state == GunState.ACTIVE_FIRING && state_timer == 0);
+//
+//        }
+//        return false;
+//    }
+@Override
+public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
+    return false;
+}
 
     public GunState getState(ItemStack stack) {
         return stack.getOrDefault(ModDataComponents.GUN_STATE, GunState.byId(0));
@@ -307,22 +321,11 @@ public class BaseGunItem extends Item {
         return stack.getOrDefault(ModDataComponents.CURRENT_CLIP, 0);
     }
 
-    public int isUseKeyPressed(ItemStack stack) {
-        return stack.getOrDefault(ModDataComponents.IS_USE_KEY_PRESSED, 0);
+    public boolean isUseKeyPressed(ItemStack stack) {
+        return stack.getOrDefault(ModDataComponents.IS_USE_KEY_PRESSED, false);
     }
 
-    public void resetIsUseKeyPressed(ItemStack stack) {
-        stack.set(ModDataComponents.IS_USE_KEY_PRESSED, 0);
-    }
-
-    public void incrementIsUseKeyPressed(ItemStack stack) {
-        int i = isUseKeyPressed(stack);
-        if (i < useTimerLimit) {
-            setIsUseKeyPressed(stack, i + 1);
-        }
-    }
-
-    public void setIsUseKeyPressed(ItemStack stack, int i) {
+    public void setIsUseKeyPressed(ItemStack stack, boolean i) {
         stack.set(ModDataComponents.IS_USE_KEY_PRESSED, i);
     }
 

@@ -16,9 +16,11 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.network.PacketDistributor;
+import org.lwjgl.glfw.GLFW;
 
 @Mod(value = MZGuns.MODID, dist = Dist.CLIENT)
 
@@ -42,6 +44,20 @@ public class MZGunsClient {
             }
         }
     }
+
+//    @SubscribeEvent()
+//    public static void onMouseKeyInput(InputEvent.MouseButton event) {
+//        switch (event.getAction()) {
+//            case GLFW.GLFW_PRESS -> {
+//
+//            }
+//            case GLFW.GLFW_RELEASE -> {
+//                var options = Minecraft.getInstance().options;
+//                if (event.getButton() != options.keyUse.getKey().getValue() && isNotInGame()) return;
+//                handleInput(event.getButton(), KeyAction.RELEASE);
+//            }
+//        }
+//    }
 
     @SubscribeEvent
     static void onClientSetup(FMLClientSetupEvent event) {

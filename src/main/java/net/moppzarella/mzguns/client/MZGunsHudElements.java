@@ -65,7 +65,7 @@ public class MZGunsHudElements implements LayeredDraw.Layer {
 
                     guiGraphics.drawCenteredString(mc.font, stack.getHoverName(), guiElementPosition.x, guiElementPosition.y - mc.font.lineHeight, 0xFFFFFF);
                     guiGraphics.drawCenteredString(mc.font, current_clip+" / "+clipSize, guiElementPosition.x, guiElementPosition.y, 0xFFFFFF);
-                    if(current_state == GunState.ACTIVE_RELOAD || current_state == GunState.ACTIVE_RELOAD_CONSECUTIVE) {
+                    if((current_state == GunState.ACTIVE_RELOAD || current_state == GunState.ACTIVE_RELOAD_CONSECUTIVE) && state_timer > 0) {
                         int reload_percentile = 0;
                         switch(current_state) {
                             case ACTIVE_RELOAD -> reload_percentile = state_timer * 100 / reloadtimeInitial;

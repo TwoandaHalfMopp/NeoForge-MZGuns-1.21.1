@@ -38,8 +38,8 @@ public class ModDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> BURST_TIMER = register("burst_timer",
             builder -> builder.persistent(Codec.INT).networkSynchronized(ByteBufCodecs.VAR_INT));
 
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> IS_USE_KEY_PRESSED = register("is_use_key_pressed",
-            builder -> builder.persistent(Codec.INT));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> IS_USE_KEY_PRESSED = register("is_use_key_pressed",
+            builder -> builder.persistent(Codec.BOOL));
 
     private static <T>DeferredHolder<DataComponentType<?>, DataComponentType<T>> register(String name,
                                                                                           UnaryOperator<DataComponentType.Builder<T>> builderOperator) {
