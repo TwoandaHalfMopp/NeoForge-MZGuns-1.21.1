@@ -1,4 +1,4 @@
-package net.moppzarella.mzguns.client;
+package net.moppzarella.mzguns.client.gui;
 
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;

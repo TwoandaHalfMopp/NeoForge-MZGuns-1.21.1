@@ -2,7 +2,7 @@ package net.moppzarella.mzguns.client.event;
 
 import net.moppzarella.mzguns.Config;
 import net.moppzarella.mzguns.MZGuns;
-import net.moppzarella.mzguns.client.MZGunsHudElements;
+import net.moppzarella.mzguns.client.gui.MZGunsHudElements;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;

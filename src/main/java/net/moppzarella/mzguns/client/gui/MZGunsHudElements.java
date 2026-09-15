@@ -1,4 +1,4 @@
-package net.moppzarella.mzguns.client;
+package net.moppzarella.mzguns.client.gui;
 
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -8,13 +8,10 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.moppzarella.mzguns.Config;
-import net.moppzarella.mzguns.MZGuns;
 import net.moppzarella.mzguns.item.custom.BaseGunItem;
 import net.moppzarella.mzguns.util.GunState;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2i;
-
-import java.text.DecimalFormat;
 
 public class MZGunsHudElements implements LayeredDraw.Layer {
     public static MZGunsHudElements MZGUNS_HUD_ELEMENTS_INSTANCE;
