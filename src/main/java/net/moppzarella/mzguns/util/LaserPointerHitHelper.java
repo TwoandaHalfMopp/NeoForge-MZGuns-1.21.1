@@ -5,6 +5,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.*;
+import net.moppzarella.mzguns.Config;
 import net.moppzarella.mzguns.entity.custom.HitscanPelletEntity;
 
 //THIS WAS STOLEN FROM DRG LASER POINTER BY linngdu664
@@ -14,8 +15,8 @@ import net.moppzarella.mzguns.entity.custom.HitscanPelletEntity;
 //IN DUE TIME I WILL REWRITE THIS BUT LIKE IT WORKS PERFECT
 
 public class LaserPointerHitHelper {
-    public static final double LASER_RANGE = 100;
-    public static final double LASER_RANGE_SQ = LASER_RANGE * LASER_RANGE;
+    public static final double LASER_RANGE = Config.HITSCAN_PELLET_RANGE.getAsInt();
+    public static final double LASER_RANGE_SQ = Math.pow(LASER_RANGE, 2);
 
     private static class SingletonHandler {
         private static final LaserPointerHitHelper instance = new LaserPointerHitHelper();

@@ -2,7 +2,6 @@ package net.moppzarella.mzguns.entity.custom;
 
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -15,10 +14,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.*;
+import net.moppzarella.mzguns.Config;
 import net.moppzarella.mzguns.entity.ModEntities;
 import net.moppzarella.mzguns.item.custom.BaseGunItem;
 import net.moppzarella.mzguns.util.LaserPointerHitHelper;
@@ -69,10 +66,17 @@ public class HitscanPelletEntity extends Projectile {
 
                 if (target instanceof LivingEntity livingTarget) {
                     livingTarget.setLastHurtByPlayer(pPlayer);
+                    double damageMultiplier = 1;
+                    Vec3 hitpos = entityHitResult.getLocation();
+                    if(isHeadshot(livingTarget, hitpos)) {
+                        damageMultiplier = Config.HEADSHOT_MULTIPLIER.getAsDouble();
+                    } else {
+                        damageMultiplier = calculateDamageFalloff(distanceTo(target));
+                    }
                     if (this.baseDamage == -1) {
                         livingTarget.kill();
                     } else {
-                        livingTarget.hurt(ModDamageTypes.causeBulletDamage(pLevel.registryAccess(),target,pPlayer), this.baseDamage * calculateDamageFalloff(distanceTo(target)));
+                        livingTarget.hurt(ModDamageTypes.causeBulletDamage(pLevel.registryAccess(),target,pPlayer), this.baseDamage * (float) damageMultiplier);
                     }
                     if (livingTarget != pPlayer && pPlayer instanceof ServerPlayer && !this.isSilent()) {
                         if (sourceGun.getItem() instanceof BaseGunItem gunItem) {
@@ -121,6 +125,15 @@ public class HitscanPelletEntity extends Projectile {
         //Delete Self
         this.discard();
 
+    }
+
+    public static boolean isHeadshot(LivingEntity target, Vec3 hitpos) {
+       double eyeY = target.getEyeY();
+       double someConstant = 1D;
+       AABB aabb = target.getHitbox();
+       return !(target instanceof Player)
+               || Math.abs(aabb.getCenter().y - eyeY) > someConstant * aabb.getYsize()
+               || hitpos.y() >= eyeY - 0.3D;
     }
 
     public float calculateDamageFalloff(float distance) {

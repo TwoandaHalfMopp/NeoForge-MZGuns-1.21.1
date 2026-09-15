@@ -292,13 +292,9 @@ public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStac
         }
     }
 
-    public int getStateTimer(ItemStack stack) {
-        return stack.getOrDefault(ModDataComponents.STATE_TIMER, 0);
-    }
+    public int getStateTimer(ItemStack stack) {return stack.getOrDefault(ModDataComponents.STATE_TIMER, 0);}
 
-    public void setStateTimer(ItemStack stack, int i) {
-        stack.set(ModDataComponents.STATE_TIMER, i);
-    }
+    public void setStateTimer(ItemStack stack, int i) {stack.set(ModDataComponents.STATE_TIMER, i);}
     public void changeStateTimer(ItemStack stack, int i) {
         int state_timer = getStateTimer(stack);
         setStateTimer(stack, state_timer+i);
@@ -309,9 +305,7 @@ public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStac
             changeStateTimer(stack, 1);
         }
     }
-    public void resetStateTimer(ItemStack stack) {
-        setStateTimer(stack, 0);
-    }
+    public void resetStateTimer(ItemStack stack) {setStateTimer(stack, 0);}
 
     public void setCurrentClip(ItemStack stack, int i) {
         stack.set(ModDataComponents.CURRENT_CLIP, i);

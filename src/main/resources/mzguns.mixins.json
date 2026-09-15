@@ -2,7 +2,8 @@
   "required": false,
   "package": "net.moppzarella.mzguns.mixin",
   "compatibilityLevel": "JAVA_21",
-  "mixins": [],
+  "mixins": [
+  ],
   "injectors": {
     "defaultRequire": 1
   },
@@ -10,6 +11,7 @@
     "requireAnnotations": true
   },
   "client": [
-    "HumanoidModelMixin"
+    "HumanoidModelMixin",
+    "MinecraftMixin"
   ]
 }
