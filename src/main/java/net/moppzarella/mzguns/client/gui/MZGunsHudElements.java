@@ -38,8 +38,9 @@ public class MZGunsHudElements implements LayeredDraw.Layer {
                     GunState current_state = baseGunItem.getState(stack);
                     int state_timer = baseGunItem.getStateTimer(stack);
                     int clipSize = ((BaseGunItem) stack.getItem()).clipSize;
-                    int reloadtimeInitial = ((BaseGunItem) stack.getItem()).reloadTimeInitial;
-                    int reloadtimeConsecutive = ((BaseGunItem) stack.getItem()).reloadTimeInitial;
+                    int reserveAmmo = ((stack.getMaxDamage() - stack.getDamageValue()) / ((BaseGunItem) stack.getItem()).xpCostPerShot);
+                    int reloadtimeInitial = ((BaseGunItem) stack.getItem()).reloadTime;
+                    int reloadtimeConsecutive = ((BaseGunItem) stack.getItem()).reloadTime;
 
                     Vector2i guiElementPosition = new Vector2i(0,0);
 
@@ -61,7 +62,7 @@ public class MZGunsHudElements implements LayeredDraw.Layer {
                     }
 
                     guiGraphics.drawCenteredString(mc.font, stack.getHoverName(), guiElementPosition.x, guiElementPosition.y - mc.font.lineHeight, 0xFFFFFF);
-                    guiGraphics.drawCenteredString(mc.font, current_clip+" / "+clipSize, guiElementPosition.x, guiElementPosition.y, 0xFFFFFF);
+                    guiGraphics.drawCenteredString(mc.font, current_clip+" / "+reserveAmmo, guiElementPosition.x, guiElementPosition.y, 0xFFFFFF);
                     if((current_state == GunState.ACTIVE_RELOAD || current_state == GunState.ACTIVE_RELOAD_CONSECUTIVE) && state_timer > 0) {
                         int reload_percentile = 0;
                         switch(current_state) {

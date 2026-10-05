@@ -16,8 +16,8 @@ public class ModLanguageProvider extends LanguageProvider {
 
         add("creativetab.mzguns.guns", "MZ Guns");
         add(ModItems.BETA_GUN.asItem(), "Beta Gun");
-        add(ModItems.PISTOL.asItem(), "Pistol");
-        add(ModItems.SHOTGUN.asItem(), "Shotgun");
-        add(ModItems.BURST_SMG.asItem(), "Burst SMG");
+        //add(ModItems.PISTOL.asItem(), "Pistol");
+        //add(ModItems.SHOTGUN.asItem(), "Shotgun");
+        //add(ModItems.BURST_SMG.asItem(), "Burst SMG");
     }
 }

@@ -17,9 +17,9 @@ public class stackCooldownOverlayEvent {
     public static void stackCooldownOverlay(RegisterItemDecorationsEvent event) {
 
         event.register(ModItems.BETA_GUN, new StackCooldownRenderer());
-        event.register(ModItems.PISTOL, new StackCooldownRenderer());
-        event.register(ModItems.SHOTGUN, new StackCooldownRenderer());
-        event.register(ModItems.BURST_SMG, new StackCooldownRenderer());
+        //event.register(ModItems.PISTOL, new StackCooldownRenderer());
+        //event.register(ModItems.SHOTGUN, new StackCooldownRenderer());
+        //event.register(ModItems.BURST_SMG, new StackCooldownRenderer());
 
     }
 

@@ -1,10 +1,10 @@
 package net.moppzarella.mzguns.item.custom;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
@@ -12,7 +12,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.moppzarella.mzguns.Config;
 import net.moppzarella.mzguns.MZGuns;
@@ -20,42 +19,42 @@ import net.moppzarella.mzguns.component.ModDataComponents;
 import net.moppzarella.mzguns.entity.custom.HitscanPelletEntity;
 import net.moppzarella.mzguns.util.GunState;
 
+import static net.moppzarella.mzguns.item.ModItems.universalDeployTime;
+
 
 public class BaseGunItem extends Item {
 
-    public final float baseDamage;
+    public final float damagePerPellet;
     public final int clipSize;
     public final int firingInterval;
-    public final int reloadTimeInitial;
-    public final int reloadTimeConsecutive;
+    public final int reloadTime;
     public final int deployTime;
-    public final int shotsPerReload;
+
+    public final int xpCostPerShot;
 
     private final int stateTimerLimit = 100;
     private final int useTimerLimit = 20;
 
-    public BaseGunItem(float baseDamage, int clipSize, int firingInterval, int reloadTimeInitial, int reloadTimeConsecutive, int deployTime, int shotsPerReload, Properties properties) {
+    public BaseGunItem(float damagePerPellet, int clipSize, int firingInterval, int xpCostPerShot, int reloadTime, Properties properties) {
         super(properties);
 
-        this.baseDamage = baseDamage;
+        this.damagePerPellet = damagePerPellet;
         this.clipSize = clipSize;
         this.firingInterval = firingInterval;
-        this.reloadTimeInitial = reloadTimeInitial;
-        this.reloadTimeConsecutive = reloadTimeConsecutive;
-        this.deployTime = deployTime;
-        this.shotsPerReload = shotsPerReload;
+        this.reloadTime = reloadTime;
+        this.xpCostPerShot = xpCostPerShot;
+        this.deployTime = universalDeployTime;
     }
 
-    public BaseGunItem(float baseDamage, int clipSize, int firingInterval, int reloadTimeInitial, int deployTime, int shotsPerReload, Properties properties) {
+    public BaseGunItem(float damagePerPellet, int clipSize, int firingInterval, int xpCostPerShot, int reloadTime, int deployTime, Properties properties) {
         super(properties);
 
-        this.baseDamage = baseDamage;
+        this.damagePerPellet = damagePerPellet;
         this.clipSize = clipSize;
         this.firingInterval = firingInterval;
-        this.reloadTimeInitial = reloadTimeInitial;
-        this.reloadTimeConsecutive = 0;
+        this.reloadTime = reloadTime;
+        this.xpCostPerShot = xpCostPerShot;
         this.deployTime = deployTime;
-        this.shotsPerReload = shotsPerReload;
     }
 
     //If this BaseGunItem is in the off-hand, perform primaryFire
@@ -132,7 +131,7 @@ public class BaseGunItem extends Item {
         );
     }
     public void shootPellets(Level level, Player player, ItemStack stack) {
-        spawnPellet(level, player, stack, 0, 0, baseDamage);
+        spawnPellet(level, player, stack, 0, 0, damagePerPellet);
     }
 
     public void spawnPellet(Level level, Player player, ItemStack stack, double yawOffset, double pitchOffset, float damage) {
@@ -190,7 +189,7 @@ public class BaseGunItem extends Item {
                     break;
                 }
                 if (state_timer >= deployTime) {
-                    if (current_clip < clipSize) {
+                    if (current_clip < clipSize && ((stack.getDamageValue() + xpCostPerShot) <= stack.getMaxDamage()) && !Config.INFINITE_RESERVE_AMMO.getAsBoolean()) {
                         setState(stack, GunState.ACTIVE_RELOAD);
                     }
                     else {
@@ -204,7 +203,7 @@ public class BaseGunItem extends Item {
                     setState(stack, GunState.HOLSTERED);
                     break;
                 } else {
-                    if (current_clip < clipSize) {
+                    if (current_clip < clipSize && ((stack.getDamageValue() + xpCostPerShot) <= (stack.getMaxDamage() - stack.getDamageValue()) && !Config.INFINITE_RESERVE_AMMO.getAsBoolean())) {
                         setState(stack, GunState.ACTIVE_RELOAD);
                     }
                 }
@@ -215,7 +214,7 @@ public class BaseGunItem extends Item {
                     break;
                 }
                 if (state_timer >= firingInterval) {
-                    if (current_clip < clipSize) {
+                    if (current_clip < clipSize && ((stack.getDamageValue() + xpCostPerShot)) <= (stack.getMaxDamage() - stack.getDamageValue()) && !Config.INFINITE_RESERVE_AMMO.getAsBoolean()) {
                         setState(stack, GunState.ACTIVE_RELOAD);
                     }
                     else {
@@ -229,31 +228,17 @@ public class BaseGunItem extends Item {
                     setState(stack, GunState.HOLSTERED);
                     break;
                 }
-                if (state_timer >= reloadTimeInitial) {
-                    int clipToAdd = Math.clamp(current_clip + shotsPerReload, 0, clipSize);
-                    setCurrentClip(stack, clipToAdd);
-                    if(clipToAdd < clipSize) {
-                        setState(stack, GunState.ACTIVE_RELOAD_CONSECUTIVE);
-                        break;
+                if (state_timer >= reloadTime) {
+                    if (Config.INFINITE_RESERVE_AMMO.getAsBoolean()) {
+                        setCurrentClip(stack, clipSize);
                     } else {
-                        setState(stack, GunState.ACTIVE_IDLE);
+
+                        int availableReserve = Mth.clamp((stack.getMaxDamage() - stack.getDamageValue()) / xpCostPerShot, 0, clipSize);
+                        stack.setDamageValue(stack.getDamageValue() + (availableReserve * xpCostPerShot));
+                        setCurrentClip(stack, availableReserve);
+
                     }
-                }
-            }
-            case GunState.ACTIVE_RELOAD_CONSECUTIVE -> {
-                if (!(player.getMainHandItem().equals(stack) || player.getOffhandItem().equals(stack))) {
-                    setState(stack, GunState.HOLSTERED);
-                    break;
-                }
-                if (state_timer >= reloadTimeConsecutive) {
-                    int clipToAdd = Math.clamp(current_clip + shotsPerReload, 0, clipSize);
-                    setCurrentClip(stack, clipToAdd);
-                    if(clipToAdd < clipSize) {
-                        setState(stack, GunState.ACTIVE_RELOAD_CONSECUTIVE);
-                        break;
-                    } else {
-                        setState(stack, GunState.ACTIVE_IDLE);
-                    }
+                    setState(stack, GunState.ACTIVE_IDLE);
                 }
             }
 

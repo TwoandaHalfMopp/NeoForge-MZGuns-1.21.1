@@ -20,9 +20,9 @@ public class ModCreativeModeTabs {
                     .title(Component.translatable("creativetab.mzguns.guns"))
                     .displayItems((itemDisplayParameters, output) -> {
 
-                        output.accept(ModItems.PISTOL);
-                        output.accept(ModItems.SHOTGUN);
-                        output.accept(ModItems.BURST_SMG);
+                        //output.accept(ModItems.PISTOL);
+                        //output.accept(ModItems.SHOTGUN);
+                        //output.accept(ModItems.BURST_SMG);
 
                     }).build()
             );

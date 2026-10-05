@@ -96,7 +96,7 @@ public class HitscanPelletEntity extends Projectile {
                     //MZGuns.LOGGER.info("Particle {}: {}, {}, {}",i,this.getX() + (lookDir.x * i),this.getY() + (lookDir.y + i),this.getZ() + (lookDir.z + i));
                     if (i >= particleRenderDistanceThreshold) {
                         ((ServerLevel) pLevel).sendParticles(
-                                new DustParticleOptions(new Vector3f(1,1,1), 0.5F),
+                                new DustParticleOptions(new Vector3f(0F,1F,0F), 0.5F),
                                 this.getX() + (lookDir.x * i),
                                 this.getEyeY() + (lookDir.y * i),
                                 this.getZ() + (lookDir.z * i),
