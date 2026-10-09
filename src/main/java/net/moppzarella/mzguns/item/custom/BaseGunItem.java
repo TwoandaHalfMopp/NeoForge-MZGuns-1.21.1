@@ -1,5 +1,6 @@
 package net.moppzarella.mzguns.item.custom;
 
+import net.minecraft.core.Holder;
 import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -12,17 +13,20 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.moppzarella.mzguns.Config;
 import net.moppzarella.mzguns.MZGuns;
 import net.moppzarella.mzguns.component.ModDataComponents;
 import net.moppzarella.mzguns.entity.custom.HitscanPelletEntity;
 import net.moppzarella.mzguns.util.GunState;
+import net.neoforged.neoforge.common.extensions.IItemExtension;
 
 import static net.moppzarella.mzguns.item.ModItems.universalDeployTime;
 
 
-public class BaseGunItem extends Item {
+public class BaseGunItem extends Item implements IItemExtension {
 
     public final float damagePerPellet;
     public final int clipSize;
@@ -313,4 +317,8 @@ public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStac
 
     public void updateHitsoundChecK(ItemStack stack, boolean newValue) {stack.set(ModDataComponents.SHOULD_PLAY_HITSOUND, newValue);}
 
+    @Override
+    public boolean supportsEnchantment(ItemStack stack, Holder<Enchantment> enchantment) {
+        return enchantment.is(Enchantments.MENDING);
+    }
 }

@@ -14,12 +14,7 @@ import net.moppzarella.mzguns.item.custom.BaseGunItem;
 import net.moppzarella.mzguns.util.GunState;
 import net.neoforged.neoforge.client.IItemDecorator;
 
-public class StackCooldownRenderer implements LayeredDraw.Layer, IItemDecorator {
-
-    @Override
-    public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
-
-    }
+public class StackCooldownRenderer implements IItemDecorator {
 
     @Override
     public boolean render(GuiGraphics guiGraphics, Font font, ItemStack itemStack, int x, int y) {
