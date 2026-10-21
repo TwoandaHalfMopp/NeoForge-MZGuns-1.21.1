@@ -1,3 +1,5 @@
-// 1.21.1	2026-10-07T14:44:42.792035338	Recipes
+// 1.21.1	2026-10-21T11:43:44.856188259	Recipes
+f48a65bb6161c07b8f544a686c1be18df6396594 data/minecraft/advancement/recipes/combat/beta_gun_smithing.json
+7a1ad05f058e7212d4db19af262948c57849ccfe data/minecraft/recipe/beta_gun_smithing.json
 78bd2c3a606e6f62cd22c07026ea412636bfac9e data/mzguns/advancement/recipes/combat/beta_gun.json
 3c070eabbb1b774b60cc1bfa0dc931d8a3cf90bd data/mzguns/recipe/beta_gun.json

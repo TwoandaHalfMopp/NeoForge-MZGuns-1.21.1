@@ -139,19 +139,28 @@ public class HitscanPelletEntity extends Projectile {
     public float calculateDamageFalloff(float distance) {
         double result;
 
-        if (distance <= 5) {
-            result = 1;
+        float r1 = (float)Config.FALLOFF_RANGE_1.getAsInt();
+        float r2 = (float)Config.FALLOFF_RANGE_2.getAsInt();
+        float r3 = (float)Config.FALLOFF_RANGE_3.getAsInt();
+        float rm = (float)Config.FALLOFF_RANGE_MAX.getAsInt();
+
+        double num;
+
+        if (distance <= r1) {
+            return 1;
         }
-        else if (distance <= 10) {
-            double pi = Math.PI;
-            double numerator = pi * (distance - 5);
+        if (r1 < distance && distance <= r2) {
+            return (float)((Math.cos((Math.PI * (distance - r1)) / (r2-r1)) + 3D)/4D);
+        }
 
-            double cosinAmount = numerator / 5;
+        if (r2 < distance && distance <= r3) {
+            return 0.5F;
+        }
 
-            result = (0.25 * Math.cos(cosinAmount)) + 0.75;
-        } else {result = 0.5;}
-
-        return (float)result;
+        if (r3 < distance && distance < rm) {
+            return (float)(Math.sqrt((1D - Math.pow((distance - r3)/(rm-r3), 2)) / 4D));
+        }
+        return 0F;
     }
 
 

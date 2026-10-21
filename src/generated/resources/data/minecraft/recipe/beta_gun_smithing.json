@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": {
+    "item": "minecraft:sculk_catalyst"
+  },
+  "base": {
+    "item": "minecraft:ancient_debris"
+  },
+  "result": {
+    "count": 1,
+    "id": "mzguns:beta_gun"
+  },
+  "template": {
+    "item": "minecraft:iron_ingot"
+  }
+}

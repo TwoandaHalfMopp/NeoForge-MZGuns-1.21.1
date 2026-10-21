@@ -16,7 +16,17 @@ public class Config {
             .comment("Weapons do not cost XP to Reload")
             .define("infiniteReserveAmmo", false);
 
-    public static final ModConfigSpec.IntValue HITSCAN_PELLET_RANGE = COMMON_BUILDER
+    public static final ModConfigSpec.IntValue FALLOFF_RANGE_1 = COMMON_BUILDER
+            .comment("Max range that hitscan pellets will travel (in blocks)")
+            .defineInRange("hitscanPelletRange", 25, 0, Integer.MAX_VALUE);
+    public static final ModConfigSpec.IntValue FALLOFF_RANGE_2 = COMMON_BUILDER
+            .comment("Max range that hitscan pellets will travel (in blocks)")
+            .defineInRange("hitscanPelletRange", 50, 0, Integer.MAX_VALUE);
+    public static final ModConfigSpec.IntValue FALLOFF_RANGE_3 = COMMON_BUILDER
+            .comment("Max range that hitscan pellets will travel (in blocks)")
+            .defineInRange("hitscanPelletRange", 75, 0, Integer.MAX_VALUE);
+
+    public static final ModConfigSpec.IntValue FALLOFF_RANGE_MAX = COMMON_BUILDER
             .comment("Max range that hitscan pellets will travel (in blocks)")
             .defineInRange("hitscanPelletRange", 100, 0, Integer.MAX_VALUE);
     public static final ModConfigSpec.DoubleValue HEADSHOT_MULTIPLIER = COMMON_BUILDER

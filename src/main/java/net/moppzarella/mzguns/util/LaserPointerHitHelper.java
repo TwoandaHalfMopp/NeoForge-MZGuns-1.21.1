@@ -15,7 +15,7 @@ import net.moppzarella.mzguns.entity.custom.HitscanPelletEntity;
 //IN DUE TIME I WILL REWRITE THIS BUT LIKE IT WORKS PERFECT
 
 public class LaserPointerHitHelper {
-    public static final double LASER_RANGE = Config.HITSCAN_PELLET_RANGE.getAsInt();
+    public static final double LASER_RANGE = Config.FALLOFF_RANGE_MAX.getAsInt();
     public static final double LASER_RANGE_SQ = Math.pow(LASER_RANGE, 2);
 
     private static class SingletonHandler {
